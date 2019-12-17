@@ -1,2 +1,2 @@
-# bbt
-Bordeaux Bike Travel Project
+# Bordeaux Bike Travel Project
+A very powerfull routing application for bikes in Bordeaux using OpenStreet Map
