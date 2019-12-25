@@ -1,3 +1,5 @@
+import os, webbrowser, subprocess
+
 class Node:
     def __init__(self, id, latitude, longitude, name = ""):
         self._id = id
@@ -8,10 +10,10 @@ class Node:
         self._neighbors = []
     
     def mark(self):
-        self.marked = True
+        self._marked = True
 
     def unmark(self):
-        self.marked = False
+        self._marked = False
 
     def isMarked(self):
         return self._marked
@@ -33,6 +35,9 @@ class Node:
 
     def getNeighbors(self):
         return self._neighbors
+
+    def getEdges(self):
+        return self._edges
 
     def _addEgde(self, e):
         self._edges.append(e)
@@ -63,6 +68,14 @@ class Edge:
     def isMarked(self):
         return self._marked
 
+    def __eq__(self, other):
+        if self.getFirst() == other.getFirst():
+            return self.getSecond() == other.getSecond()
+        elif self.getFirst() == other.getSecond():
+            return self.getSecond() == other.getFirst()
+        else:
+            return False
+
 class Graph:
     def __init__(self, adj, name = ""):
         self._nodes = []
@@ -77,6 +90,12 @@ class Graph:
 
     def getNodes(self):
         return self._nodes
+
+    def getNodeByName(self, name):
+        for node in self._nodes:
+            if node.getName() == name:
+                return node
+        return None
 
     def unmarkAll(self):
         for s in self._nodes:
@@ -97,3 +116,38 @@ class Graph:
 
         string += str(adj)
         return string
+
+    def save(self, path):
+        f = open(path, "w")
+        lines = [
+            f'graph "{self._name}"' + ' {\n',
+            "rankdir=LR ratio=.5 node[shape=box style=filled]\n"]
+        passed_egdes = []
+
+        for node in self._nodes:
+            for edge in node.getEdges():
+                neighbor = node.neighborFrom(edge)
+                if not edge in passed_egdes:
+                    lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}";\n')
+                    passed_egdes.append(edge)
+            if node.isMarked():
+                lines.append(f'  "{node.getName()}" [fillcolor = black, fontcolor = white, color = white];\n')
+            else: lines.append(f'  "{node.getName()}" [fillcolor = white, fontcolor = black, color = black];\n')
+        
+        lines.append("}")
+
+        f.writelines(lines)
+
+    @staticmethod
+    def open(path):
+        pass
+
+    def draw(self):
+        if not os.path.exists("./tmp"):
+            os.mkdir("./tmp")
+        self.save("./tmp/tmp.txt")
+
+        ret = subprocess.call(['dot', '-Tsvg', '-O', os.path.abspath('./tmp/tmp.txt')])
+
+        if ret == 0:
+            webbrowser.open_new_tab("file://" + os.path.abspath('./tmp/tmp.txt.svg'))

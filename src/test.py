@@ -12,4 +12,9 @@ g = Graph({
     n4: [n2]
 }, "Test Graphe")
 
-print(g)
+"""for edge in g.getNodes()[0].getEdges():
+    edge.mark()"""
+
+g.getNodeByName("Chez moi").mark()
+
+g.draw()
