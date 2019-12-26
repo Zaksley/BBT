@@ -1,7 +1,13 @@
-import os, webbrowser, subprocess
+import os
+import webbrowser
+import subprocess
+import xml
 
 class Node:
     """
+    Summary
+    =======
+
     A class which represent both a node in a non-oriented graph and a node in OSM data
 
     Parameters
@@ -63,6 +69,7 @@ class Node:
         """
         Returns node's ID relative to OSM data
         """
+
         return self._id
 
     def getName(self):
@@ -117,6 +124,9 @@ class Edge:
     Parameters
     ==========
 
+    `id` : int
+        The edge's OSM ID
+
     `first` : Node
         The node where this edge starts
 
@@ -127,12 +137,20 @@ class Edge:
         The name of the edge
     """
 
-    def __init__(self, first, second, weight = 1, name = ""):
+    def __init__(self, id, first, second, weight = 1, name = ""):
+        self._id = id
         self._first = first
         self._second = second
         self._weight = weight
         self._marked = False
         self._name = ""
+
+    def getId(self):
+        """
+        Returns node's ID relative to OSM data
+        """
+
+        return self._id
 
     def getFirst(self):
         """
@@ -223,7 +241,7 @@ class Graph:
         for node in adj.keys():
             for neighbor in adj[node]:
                 node._addNeighbor(neighbor)
-                node._addEgde(Edge(node, neighbor))
+                node._addEgde(Edge(0, node, neighbor))
 
             self._nodes.append(node)
 
@@ -284,8 +302,10 @@ class Graph:
     @staticmethod
     def open(path):
         """
-        Returns a `Graph` opened at `path`
+        Returns a `Graph` opened from an osm file `path`
         """
+
+        #Parse the xml osm file
 
         pass
 
