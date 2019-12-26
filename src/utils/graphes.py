@@ -2,6 +2,9 @@ import os, webbrowser, subprocess
 
 class Node:
     """
+    Summary
+    =======
+
     A class which represent both a node in a non-oriented graph and a node in OSM data
 
     Parameters
