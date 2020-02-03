@@ -1,7 +1,6 @@
 import os
 import webbrowser
 import subprocess
-import xml
 import math
 
 class Node:
