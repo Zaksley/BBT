@@ -1,4 +1,7 @@
-import os, webbrowser, subprocess
+import os
+import webbrowser
+import subprocess
+import math
 
 class Node:
     """
@@ -28,6 +31,8 @@ class Node:
         self._coordinates = (latitude, longitude)
         self._marked = False
         self._name = name
+        self._distance = math.inf
+        self._color = 'black'
         self._edges = []
         self._neighbors = []
     
@@ -44,6 +49,20 @@ class Node:
         """
 
         self._marked = False
+
+    def setDistance(self, distance):
+        """
+        Set the node's distance to `distance` 
+        """
+
+        self._distance = distance
+
+    def setColor(self, color):
+        """
+        Set the node's color to `color` 
+        """
+
+        self._color = color
 
     def isMarked(self):
         """
@@ -66,6 +85,7 @@ class Node:
         """
         Returns node's ID relative to OSM data
         """
+
         return self._id
 
     def getName(self):
@@ -96,6 +116,20 @@ class Node:
 
         return self._edges
 
+    def getDistance(self):
+        """
+        Get the node's distance
+        """
+
+        return self._distance
+
+    def getColor(self):
+        """
+        Returns the node's color
+        """
+
+        return self._color
+
     def _addEgde(self, e):
         """
         Add an edge to the node's list of edges
@@ -120,6 +154,9 @@ class Edge:
     Parameters
     ==========
 
+    `id` : int
+        The edge's OSM ID
+
     `first` : Node
         The node where this edge starts
 
@@ -130,12 +167,20 @@ class Edge:
         The name of the edge
     """
 
-    def __init__(self, first, second, weight = 1, name = ""):
+    def __init__(self, id, first, second, weight = 1, name = ""):
+        self._id = id
         self._first = first
         self._second = second
         self._weight = weight
         self._marked = False
         self._name = ""
+
+    def getId(self):
+        """
+        Returns node's ID relative to OSM data
+        """
+
+        return self._id
 
     def getFirst(self):
         """
@@ -150,6 +195,13 @@ class Edge:
         """
 
         return self._second
+
+    def getWeight(self):
+        """
+        Returns the wieght of the edge
+        """
+
+        return self._weight
 
     def mark(self):
         """
@@ -224,9 +276,9 @@ class Graph:
         self._name = name
 
         for node in adj.keys():
-            for neighbor in adj[node]:
+            for (neighbor, weight) in adj[node]:
                 node._addNeighbor(neighbor)
-                node._addEgde(Edge(node, neighbor))
+                node._addEgde(Edge(0, node, neighbor, weight))
 
             self._nodes.append(node)
 
@@ -256,7 +308,82 @@ class Graph:
             for e in s.getEdges():
                 e.unmark()
             s.unmark()
+
+    def _reversePath(self, start, end):
+        """
+        Return the path from `start` to `end` in a colored/marked graph
+        """
+
+        path = [end]
+
+        current = end
+
+        while current.getDistance() > 0:
+            for edge in current.getEdges():
+                neighbor = current.neighborFrom(edge)
+                if edge.isMarked() and neighbor.getDistance() == current.getDistance() - 1:
+                    path.insert(0, neighbor)
+                    current = neighbor
+
+        return path
+
+    def path(self, start, end):
+        """
+        Returns an array of `Node` which represents a path from node `start` to node `end`
+        """
     
+        waitList = []
+        start.setDistance(0)
+        start.mark()
+        waitList.append(start)
+
+        while len(waitList) != 0:
+            current = waitList.pop(0)
+
+            if current == end:
+                return self._reversePath(start, end)
+            
+            for neighbor in current.getNeighbors():
+                if not neighbor.isMarked():
+                    neighbor.mark()
+                    Edge.between(current, neighbor).mark()
+                    neighbor.setDistance(current.getDistance() + 1)
+                    waitList.append(neighbor)
+    
+    def colorByDistance(self):
+        """
+        Color all the nodes beside to their distance
+        """
+
+        for node in self._nodes:
+
+            if (node.getDistance()) == 1 :
+                node.setColor('red')
+        
+            if (node.getDistance()) == 2 :
+                node.setColor('green')
+
+            if (node.getDistance()) == 3 :
+                node.setColor('blue')
+
+            if (node.getDistance()) == 4 :
+                node.setColor('yellow')
+
+            if (node.getDistance()) == 5 :
+                node.setColor('orange')
+
+            if (node.getDistance()) == 6 :
+                node.setColor('olive')
+
+            if (node.getDistance()) == 7 :
+                node.setColor('aqua')
+
+            if (node.getDistance()) == 8 :
+                node.setColor('indigo')
+
+            if (node.getDistance()) == 9 :
+                node.setColor('tomato')
+
     def save(self, path):
         """
         Save the graph to dot format at `path` so it can be displayed by Graphviz
@@ -277,7 +404,7 @@ class Graph:
                     else: lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}";\n')
                     passed_egdes.append(edge)
             if node.isMarked():
-                lines.append(f'  "{node.getName()}" [fillcolor = black, fontcolor = white, color = white];\n')
+                lines.append(f'  "{node.getName()}" [fillcolor = {node.getColor()}, fontcolor = white, color = white];\n')
             else: lines.append(f'  "{node.getName()}" [fillcolor = white, fontcolor = black, color = black];\n')
         
         lines.append("}")
@@ -287,8 +414,10 @@ class Graph:
     @staticmethod
     def open(path):
         """
-        Returns a `Graph` opened at `path`
+        Returns a `Graph` opened from an osm file `path`
         """
+
+        #Parse the xml osm file
 
         pass
 

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm verison="0.6">
+    <bounds minlat="44.68" minlon="-0.8299999" maxlat="45.01" maxlon="-0.3199997"/>
+    <node id="2077507462" lat="44.8267018" lon="-0.4478913" version="1"/>
+    <node id="2077513607" lat="44.8266175" lon="-0.4452404" version="1"/>
+	<node id="2077513609" lat="44.8266879" lon="-0.4470349" version="1"/>
+    <node id="2673560499" lat="44.8264527" lon="-0.4449842" version="1"/>
+	<node id="2673560501" lat="44.8264637" lon="-0.4450347" version="1"/>
+	<node id="2673560503" lat="44.8264684" lon="-0.4448977" version="1"/>
+	<node id="2673560504" lat="44.8264867" lon="-0.4450703" version="1"/>
+	<node id="2673560505" lat="44.8264936" lon="-0.4448654" version="1"/>
+	<node id="2673560507" lat="44.8265176" lon="-0.4450909" version="1"/>
+	<node id="2673560508" lat="44.8265258" lon="-0.4448491" version="1"/>
+	<node id="2673560510" lat="44.8265517" lon="-0.4450932" version="1"/>
+	<node id="2673560511" lat="44.8265599" lon="-0.4448514" version="1"/>
+	<node id="2673560512" lat="44.8265838" lon="-0.4450769" version="1"/>
+	<node id="2673560513" lat="44.8265908" lon="-0.4448719" version="1"/>
+	<node id="2673560514" lat="44.8266091" lon="-0.4450445" version="1"/>
+	<node id="2673560515" lat="44.8266137" lon="-0.4449075" version="1"/>
+	<node id="2673560516" lat="44.8266237" lon="-0.445001" version="1"/>
+	<node id="2673560517" lat="44.8266253" lon="-0.4449529" version="1"/>
+    <way id="261753710" version="1">
+		<nd ref="2673560512"/>
+		<nd ref="2077513607"/>
+		<nd ref="2077513609"/>
+		<nd ref="2077507462"/>
+		<tag k="name" v="Rue du Bois Menu"/>
+		<tag k="highway" v="residential"/>
+	</way>
+	<way id="261753711" version="1">
+		<nd ref="2673560516"/>
+		<nd ref="2673560514"/>
+		<nd ref="2673560512"/>
+		<nd ref="2673560510"/>
+		<nd ref="2673560507"/>
+		<nd ref="2673560504"/>
+		<nd ref="2673560501"/>
+		<nd ref="2673560499"/>
+		<nd ref="2673560500"/>
+		<nd ref="2673560503"/>
+		<nd ref="2673560505"/>
+		<nd ref="2673560508"/>
+		<nd ref="2673560511"/>
+		<nd ref="2673560513"/>
+		<nd ref="2673560515"/>
+		<nd ref="2673560517"/>
+		<nd ref="2673560516"/>
+		<tag k="highway" v="residential"/>
+		<tag k="junction" v="roundabout"/>
+	</way>
+<osm/>
