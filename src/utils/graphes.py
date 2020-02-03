@@ -262,7 +262,6 @@ class Graph:
 
         for node in adj.keys():
             for (neighbor, weight) in adj[node]:
-                print(adj[node])
                 node._addNeighbor(neighbor)
                 node._addEgde(Edge(0, node, neighbor, weight))
 
