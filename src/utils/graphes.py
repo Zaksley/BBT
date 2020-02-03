@@ -33,6 +33,7 @@ class Node:
         self._name = name
         self._distance = math.inf
         self._color = 'black'
+        self._predecesor = None
         self._edges = []
         self._neighbors = []
     
@@ -63,6 +64,13 @@ class Node:
         """
 
         self._color = color
+
+    def setPredecessor(self, predecessor):
+        """
+        Set the node's predecessor to `predecessor` for Dijkstra algorithm
+        """
+
+        self._predecesor = predecessor
 
     def isMarked(self):
         """
@@ -129,6 +137,13 @@ class Node:
         """
 
         return self._color
+
+    def getPredecessor(self):
+        """
+        Get the node's predecessor
+        """
+
+        return self._predecesor
 
     def _addEgde(self, e):
         """
