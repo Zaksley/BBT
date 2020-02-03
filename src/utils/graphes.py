@@ -32,6 +32,7 @@ class Node:
         self._marked = False
         self._name = name
         self._distance = math.inf
+        self._color = 'black'
         self._edges = []
         self._neighbors = []
     
@@ -55,6 +56,13 @@ class Node:
         """
 
         self._distance = distance
+
+    def setColor(self, color):
+        """
+        Set the node's color to `color` 
+        """
+
+        self._color = color
 
     def isMarked(self):
         """
@@ -114,6 +122,13 @@ class Node:
         """
 
         return self._distance
+
+    def getColor(self):
+        """
+        Returns the node's color
+        """
+
+        return self._color
 
     def _addEgde(self, e):
         """
@@ -293,7 +308,82 @@ class Graph:
             for e in s.getEdges():
                 e.unmark()
             s.unmark()
+
+    def _reversePath(self, start, end):
+        """
+        Return the path from `start` to `end` in a colored/marked graph
+        """
+
+        path = [end]
+
+        current = end
+
+        while current.getDistance() > 0:
+            for edge in current.getEdges():
+                neighbor = current.neighborFrom(edge)
+                if edge.isMarked() and neighbor.getDistance() == current.getDistance() - 1:
+                    path.insert(0, neighbor)
+                    current = neighbor
+
+        return path
+
+    def path(self, start, end):
+        """
+        Returns an array of `Node` which represents a path from node `start` to node `end`
+        """
     
+        waitList = []
+        start.setDistance(0)
+        start.mark()
+        waitList.append(start)
+
+        while len(waitList) != 0:
+            current = waitList.pop(0)
+
+            if current == end:
+                return self._reversePath(start, end)
+            
+            for neighbor in current.getNeighbors():
+                if not neighbor.isMarked():
+                    neighbor.mark()
+                    Edge.between(current, neighbor).mark()
+                    neighbor.setDistance(current.getDistance() + 1)
+                    waitList.append(neighbor)
+    
+    def colorByDistance(self):
+        """
+        Color all the nodes beside to their distance
+        """
+
+        for node in self._nodes:
+
+            if (node.getDistance()) == 1 :
+                node.setColor('red')
+        
+            if (node.getDistance()) == 2 :
+                node.setColor('green')
+
+            if (node.getDistance()) == 3 :
+                node.setColor('blue')
+
+            if (node.getDistance()) == 4 :
+                node.setColor('yellow')
+
+            if (node.getDistance()) == 5 :
+                node.setColor('orange')
+
+            if (node.getDistance()) == 6 :
+                node.setColor('olive')
+
+            if (node.getDistance()) == 7 :
+                node.setColor('aqua')
+
+            if (node.getDistance()) == 8 :
+                node.setColor('indigo')
+
+            if (node.getDistance()) == 9 :
+                node.setColor('tomato')
+
     def save(self, path):
         """
         Save the graph to dot format at `path` so it can be displayed by Graphviz
@@ -314,7 +404,7 @@ class Graph:
                     else: lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}";\n')
                     passed_egdes.append(edge)
             if node.isMarked():
-                lines.append(f'  "{node.getName()}" [fillcolor = black, fontcolor = white, color = white];\n')
+                lines.append(f'  "{node.getName()}" [fillcolor = {node.getColor()}, fontcolor = white, color = white];\n')
             else: lines.append(f'  "{node.getName()}" [fillcolor = white, fontcolor = black, color = black];\n')
         
         lines.append("}")
