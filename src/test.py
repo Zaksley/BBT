@@ -63,8 +63,11 @@ g = Graph({
     n[26]: [(n[24], 350), (n[1], 200)]
 }, "Test")
 
-print(g.path(n[0], n[1]))
+res = g.path(g.getNodeByName("Début"), g.getNodeByName("Fin"))
 g.colorByDistance()
+
+for node in res:
+    print(node.getName())
 
 #On dessine le graphe
 g.draw()

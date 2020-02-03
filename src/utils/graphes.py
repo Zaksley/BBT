@@ -400,8 +400,8 @@ class Graph:
                 neighbor = node.neighborFrom(edge)
                 if not edge in passed_egdes:
                     if edge.isMarked():
-                        lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}" [color = red];\n')
-                    else: lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}";\n')
+                        lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}" [color = red, label = {edge.getWeight()}];\n')
+                    else: lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}" [label = {edge.getWeight()}];\n')
                     passed_egdes.append(edge)
             if node.isMarked():
                 lines.append(f'  "{node.getName()}" [fillcolor = {node.getColor()}, fontcolor = white, color = white];\n')
