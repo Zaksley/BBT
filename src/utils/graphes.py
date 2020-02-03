@@ -404,8 +404,8 @@ class Graph:
                     else: lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}" [label = {edge.getWeight()}];\n')
                     passed_egdes.append(edge)
             if node.isMarked():
-                lines.append(f'  "{node.getName()}" [fillcolor = {node.getColor()}, fontcolor = white, color = white];\n')
-            else: lines.append(f'  "{node.getName()}" [fillcolor = white, fontcolor = black, color = black];\n')
+                lines.append(f'  "{node.getName()}" [fillcolor = {node.getColor()}, fontcolor = white, color = white, label = "{node.getName()} ({node.getDistance()})"];\n')
+            else: lines.append(f'  "{node.getName()}" [fillcolor = white, fontcolor = black, color = black, label = "{node.getName()} ({node.getDistance()})"];\n')
         
         lines.append("}")
 
