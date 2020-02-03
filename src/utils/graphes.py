@@ -2,6 +2,7 @@ import os
 import webbrowser
 import subprocess
 import xml
+import math
 
 class Node:
     """
@@ -31,6 +32,7 @@ class Node:
         self._coordinates = (latitude, longitude)
         self._marked = False
         self._name = name
+        self._distance = math.inf
         self._edges = []
         self._neighbors = []
     
@@ -47,6 +49,13 @@ class Node:
         """
 
         self._marked = False
+
+    def setDistance(self, distance):
+        """
+        Set the node's distance to `distance` 
+        """
+
+        self._distance = distance
 
     def isMarked(self):
         """
@@ -99,6 +108,13 @@ class Node:
         """
 
         return self._edges
+
+    def getDistance(self):
+        """
+        Get the node's distance
+        """
+
+        return self._distance
 
     def _addEgde(self, e):
         """
@@ -165,6 +181,13 @@ class Edge:
         """
 
         return self._second
+
+    def getWeight(self):
+        """
+        Returns the wieght of the edge
+        """
+
+        return self._weight
 
     def mark(self):
         """
@@ -239,9 +262,9 @@ class Graph:
         self._name = name
 
         for node in adj.keys():
-            for neighbor in adj[node]:
+            for (neighbor, weight) in adj[node]:
                 node._addNeighbor(neighbor)
-                node._addEgde(Edge(0, node, neighbor))
+                node._addEgde(Edge(0, node, neighbor, weight))
 
             self._nodes.append(node)
 

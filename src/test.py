@@ -9,10 +9,10 @@ n4 = Node(4, 80, -2, "Chez moi")
 #Attention: il faut que tous les voisins de chaque sommet soit renseigné sinon ca plante le markage des arettes
 #On construit un graphe avec ces sommets
 g = Graph({
-    n1: [n2, n3],
-    n2: [n1, n3, n4],
-    n3: [n2, n4, n1],
-    n4: [n2, n3]
+    n1: [(n2, 10), (n3, 4)],
+    n2: [(n1, 8), (n3, 8), (n4, 2)],
+    n3: [(n2, 1), (n4, 4), (n1, 20)],
+    n4: [(n2, 78), (n3, 40)]
 }, "Test")
 
 #On marque toutes les arettes du premier sommet du graphe
