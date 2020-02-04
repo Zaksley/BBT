@@ -33,6 +33,7 @@ class Node:
         self._name = name
         self._distance = math.inf
         self._color = 'black'
+        self._predecesor = None
         self._edges = []
         self._neighbors = []
     
@@ -63,6 +64,13 @@ class Node:
         """
 
         self._color = color
+
+    def setPredecessor(self, predecessor):
+        """
+        Set the node's predecessor to `predecessor` for Dijkstra algorithm
+        """
+
+        self._predecesor = predecessor
 
     def isMarked(self):
         """
@@ -129,6 +137,13 @@ class Node:
         """
 
         return self._color
+
+    def getPredecessor(self):
+        """
+        Get the node's predecessor
+        """
+
+        return self._predecesor
 
     def _addEgde(self, e):
         """
@@ -400,12 +415,12 @@ class Graph:
                 neighbor = node.neighborFrom(edge)
                 if not edge in passed_egdes:
                     if edge.isMarked():
-                        lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}" [color = red];\n')
-                    else: lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}";\n')
+                        lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}" [color = red, label = {edge.getWeight()}];\n')
+                    else: lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}" [label = {edge.getWeight()}];\n')
                     passed_egdes.append(edge)
             if node.isMarked():
-                lines.append(f'  "{node.getName()}" [fillcolor = {node.getColor()}, fontcolor = white, color = white];\n')
-            else: lines.append(f'  "{node.getName()}" [fillcolor = white, fontcolor = black, color = black];\n')
+                lines.append(f'  "{node.getName()}" [fillcolor = {node.getColor()}, fontcolor = white, color = white, label = "{node.getName()} ({node.getDistance()})"];\n')
+            else: lines.append(f'  "{node.getName()}" [fillcolor = white, fontcolor = black, color = black, label = "{node.getName()} ({node.getDistance()})"];\n')
         
         lines.append("}")
 
