@@ -145,7 +145,7 @@ class Node:
 
         return self._predecesor
 
-    def _addEgde(self, e):
+    def _addEdge(self, e):
         """
         Add an edge to the node's list of edges
         """
@@ -182,11 +182,11 @@ class Edge:
         The name of the edge
     """
 
-    def __init__(self, id, first, second, weight = 1, name = ""):
+    def __init__(self, id, first, second, length = 1, name = ""):
         self._id = id
         self._first = first
         self._second = second
-        self._weight = weight
+        self._length = length
         self._marked = False
         self._name = ""
 
@@ -211,12 +211,12 @@ class Edge:
 
         return self._second
 
-    def getWeight(self):
+    def getLength(self):
         """
-        Returns the wieght of the edge
+        Returns the length of the edge
         """
 
-        return self._weight
+        return self._length
 
     def mark(self):
         """
@@ -291,9 +291,9 @@ class Graph:
         self._name = name
 
         for node in adj.keys():
-            for (neighbor, weight) in adj[node]:
+            for (neighbor, length) in adj[node]:
                 node._addNeighbor(neighbor)
-                node._addEgde(Edge(0, node, neighbor, weight))
+                node._addEdge(Edge(0, node, neighbor, length))
 
             self._nodes.append(node)
 
@@ -369,42 +369,115 @@ class Graph:
         """
         Color all the nodes beside to their distance
         """
+        
+        colors = {
+            0: 'black', 1: 'red', 2: 'green', 3: 'blue', 4: 'yellow',
+            5: 'orange', 6: 'olive', 7: 'aqua', 8: 'indigo',
+            9: 'tomato'
+        }
 
         for node in self._nodes:
+            distance = node.getDistance() if 0 <= node.getDistance() <= 9 else 0 
+            node.setColor(colors[distance])
 
-            if (node.getDistance()) == 1 :
-                node.setColor('red')
+    def _computeDistancesAndFindBest(self, node):
+        """
+        Attrbute it distance to each neighbor of `node` and return the nearest
+        Returns itself if there are no neighbors
+        """
+
+        (bestNode, bestDist) = (None, math.inf)
+
+        for edge in node.getEdges():
+            neighbor = node.neighborFrom(edge)
+
+            if neighbor.isMarked():
+                continue
+
+            distance = node.getDistance() + edge.getLength()
+
+            if distance < neighbor.getDistance(): #Si la distance etait deja calcule et plus petite alors on touche pas
+                neighbor.setDistance(distance)
+                neighbor.setPredecessor(node)
+            else:
+                distance = neighbor.getDistance()
+
+            if distance < bestDist:
+                (bestNode, bestDist) = (neighbor, distance)
+
+        return bestNode
+
+    def _closestNode(self, node):
+        """
+        Returns the neighbor of `node` which is not marked and is the closest to `node`
+        """
+
+        best = None
+
+        for neighbor in node.getNeighbors():
+            if not neighbor.isMarked():
+                if best == None:
+                    best = neighbor
+                    continue
+                if neighbor.getDistance() < best.getDistance():
+                    best = neighbor
+
+        return best
+
+    def _reversePathDijkstra(self, node):
+        """
+        Follow all the predecessors of `node` the retrieve the shortest path to it with Dijkstra algorithm
+        """
+
+        path = []
+        predecessor = node
+
+        while predecessor != None:
+            path.insert(0, predecessor)
+            predecessor = predecessor.getPredecessor()
+
+        return path
+
+    def pathDijkstra(self, start, end):
+        """
+        Returns an array of `Node` which represents a path from node `start` to node `end` using the Dijkstra algorithm
+        """
+
+        start.setDistance(0)
+
+        best = None
+        treated = []
+        current = start
         
-            if (node.getDistance()) == 2 :
-                node.setColor('green')
+        while current != end:
+            current.mark()
 
-            if (node.getDistance()) == 3 :
-                node.setColor('blue')
+            best = self._computeDistancesAndFindBest(current)
 
-            if (node.getDistance()) == 4 :
-                node.setColor('yellow')
+            #Verify in the already treated nodes if one of them is closer to start
+            for node in treated:
+                bestNeighbor = self._closestNode(node)
+                if bestNeighbor == None: #If all the neighbors was marked
+                    continue
+                elif best == None: #If the last node didn't have any neighbor
+                    best = bestNeighbor
+                elif bestNeighbor.getDistance() < best.getDistance(): #If the node is closest
+                    best = bestNeighbor
 
-            if (node.getDistance()) == 5 :
-                node.setColor('orange')
+            #This node has been treated so we add it to the list of treated node
+            treated.insert(0, current)
 
-            if (node.getDistance()) == 6 :
-                node.setColor('olive')
+            #Now treat the closest node
+            current = best
 
-            if (node.getDistance()) == 7 :
-                node.setColor('aqua')
-
-            if (node.getDistance()) == 8 :
-                node.setColor('indigo')
-
-            if (node.getDistance()) == 9 :
-                node.setColor('tomato')
+        return self._reversePathDijkstra(current)
 
     def save(self, path):
         """
         Save the graph to dot format at `path` so it can be displayed by Graphviz
         """
 
-        f = open(path, "w")
+        f = open(path, "w", encoding="utf8")
         lines = [
             f'graph "{self._name}"' + ' {\n',
             "rankdir=LR ratio=.5 node[shape=box style=filled]\n"]
@@ -415,8 +488,8 @@ class Graph:
                 neighbor = node.neighborFrom(edge)
                 if not edge in passed_egdes:
                     if edge.isMarked():
-                        lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}" [color = red, label = {edge.getWeight()}];\n')
-                    else: lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}" [label = {edge.getWeight()}];\n')
+                        lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}" [color = red, label = {edge.getLength()}];\n')
+                    else: lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}" [label = {edge.getLength()}];\n')
                     passed_egdes.append(edge)
             if node.isMarked():
                 lines.append(f'  "{node.getName()}" [fillcolor = {node.getColor()}, fontcolor = white, color = white, label = "{node.getName()} ({node.getDistance()})"];\n')
