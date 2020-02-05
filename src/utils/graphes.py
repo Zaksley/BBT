@@ -477,7 +477,7 @@ class Graph:
         Save the graph to dot format at `path` so it can be displayed by Graphviz
         """
 
-        f = open(path, "w")
+        f = open(path, "w", encoding="utf8")
         lines = [
             f'graph "{self._name}"' + ' {\n',
             "rankdir=LR ratio=.5 node[shape=box style=filled]\n"]
