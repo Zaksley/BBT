@@ -380,102 +380,59 @@ class Graph:
             distance = node.getDistance() if 0 <= node.getDistance() <= 9 else 0 
             node.setColor(colors[distance])
 
-    def _computeDistancesAndFindBest(self, node):
-        """
-        Attrbute it distance to each neighbor of `node` and return the nearest
-        Returns itself if there are no neighbors
-        """
+    def pathDijkstra(self, start, end):
+        start.setDistance(0)
+        current = start
 
-        (bestNode, bestDist) = (None, math.inf)
+        toBeTreated = [current]
 
-        for edge in node.getEdges():
-            neighbor = node.neighborFrom(edge)
+        while current != end:
+            current.mark() #Le noeud a une distance definitive
+            toBeTreated.remove(current) #On supprime le noeud choisit de la liste des noeuds a traiter car il a maintenant une distance definitive
 
-            if neighbor.isMarked():
-                continue
+            #On calcule la distance des voisins et on prend le plus proche auquel on definie sa distance comme definitive (en le marquant et le supprimant de la liste a la prochaine boucle)
+            best = None
+            bestDist = math.inf
 
-            distance = node.getDistance() + edge.getLength()
+            for edge in current.getEdges():
+                neighbor = current.neighborFrom(edge)
 
-            if distance < neighbor.getDistance(): #Si la distance etait deja calcule et plus petite alors on touche pas
-                neighbor.setDistance(distance)
-                neighbor.setPredecessor(node)
-            else:
-                distance = neighbor.getDistance()
-
-            if distance < bestDist:
-                (bestNode, bestDist) = (neighbor, distance)
-
-        return bestNode
-
-    def _closestNode(self, node):
-        """
-        Returns the neighbor of `node` which is not marked and is the closest to `node`
-        """
-
-        best = None
-
-        for neighbor in node.getNeighbors():
-            if not neighbor.isMarked():
-                if best == None:
-                    best = neighbor
+                if neighbor.isMarked():
                     continue
-                if neighbor.getDistance() < best.getDistance():
+
+                toBeTreated.append(neighbor) #On ajoute tous les noeuds a la liste de noeuds a traiter
+
+                distance = current.getDistance() + edge.getLength()
+
+                if distance < neighbor.getDistance(): #Si la distance etait deja calcule et plus petite alors on la touche pas
+                    neighbor.setDistance(distance)
+                    neighbor.setPredecessor(current)
+                else:
+                    distance = neighbor.getDistance()
+
+                if distance < bestDist:
                     best = neighbor
+                    bestDist = distance
 
-        return best
+            #On cherche le meilleur noeud
+            for node in toBeTreated:
+                if best == None:
+                    best = node
+                    continue
+                if node.getDistance() < best.getDistance():
+                    best = node
 
-    def _reversePathDijkstra(self, node):
-        """
-        Follow all the predecessors of `node` the retrieve the shortest path to it with Dijkstra algorithm
-        """
+            current = best
 
+        #Compute final path
         path = []
-        predecessor = node
+        predecessor = current
 
         while predecessor != None:
             path.insert(0, predecessor)
             predecessor = predecessor.getPredecessor()
 
         return path
-
-    def _findBestInTreated(self, oldBest, treated):
-        #Verify in the already treated nodes if one of them is closer to start
-        best = oldBest
-
-        for node in treated:
-            bestNeighbor = self._closestNode(node)
-            if bestNeighbor == None: #If all the neighbors was marked
-                continue
-            elif best == None: #If the last node didn't have any neighbor
-                best = bestNeighbor
-            elif bestNeighbor.getDistance() < best.getDistance(): #If the node is closest
-                best = bestNeighbor
-
-        return best
-
-    def pathDijkstra(self, start, end):
-        """
-        Returns an array of `Node` which represents a path from node `start` to node `end` using the Dijkstra algorithm
-        """
-
-        treated = []
-
-        start.setDistance(0)
-        current = start
-        
-        while current != end:
-            current.mark()
-
-            firstBest = self._computeDistancesAndFindBest(current)
-            newBest = self._findBestInTreated(firstBest, treated)
-
-            #This node has been treated so we add it to the list of treated node
-            treated.insert(0, current)
-
-            #Now treat the closest node
-            current = newBest
-
-        return self._reversePathDijkstra(current)
 
     def save(self, path):
         """
@@ -527,20 +484,3 @@ class Graph:
 
         if ret == 0:
             webbrowser.open_new_tab("file://" + os.path.abspath('./tmp/tmp.txt.svg'))
-
-    def __str__(self):
-        string = "Name: " + self._name + "\n"
-        adj = {}
-
-        for n in self._nodes:
-            current = n.getName()
-            adj[current] = []
-
-            for v in n.getNeighbors():
-                adj[current].append(v.getName())
-
-        string += str(adj)
-        return string
-
-    def __repr__(self):
-        return self.__str__()
