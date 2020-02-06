@@ -438,37 +438,42 @@ class Graph:
 
         return path
 
+    def _findBestInTreated(self, oldBest, treated):
+        #Verify in the already treated nodes if one of them is closer to start
+        best = oldBest
+
+        for node in treated:
+            bestNeighbor = self._closestNode(node)
+            if bestNeighbor == None: #If all the neighbors was marked
+                continue
+            elif best == None: #If the last node didn't have any neighbor
+                best = bestNeighbor
+            elif bestNeighbor.getDistance() < best.getDistance(): #If the node is closest
+                best = bestNeighbor
+
+        return best
+
     def pathDijkstra(self, start, end):
         """
         Returns an array of `Node` which represents a path from node `start` to node `end` using the Dijkstra algorithm
         """
 
-        start.setDistance(0)
-
-        best = None
         treated = []
+
+        start.setDistance(0)
         current = start
         
         while current != end:
             current.mark()
 
-            best = self._computeDistancesAndFindBest(current)
-
-            #Verify in the already treated nodes if one of them is closer to start
-            for node in treated:
-                bestNeighbor = self._closestNode(node)
-                if bestNeighbor == None: #If all the neighbors was marked
-                    continue
-                elif best == None: #If the last node didn't have any neighbor
-                    best = bestNeighbor
-                elif bestNeighbor.getDistance() < best.getDistance(): #If the node is closest
-                    best = bestNeighbor
+            firstBest = self._computeDistancesAndFindBest(current)
+            newBest = self._findBestInTreated(firstBest, treated)
 
             #This node has been treated so we add it to the list of treated node
             treated.insert(0, current)
 
             #Now treat the closest node
-            current = best
+            current = newBest
 
         return self._reversePathDijkstra(current)
 

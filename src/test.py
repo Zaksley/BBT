@@ -63,7 +63,7 @@ g = Graph({
     n[26]: [(n[24], 350), (n[1], 200)]
 }, "Test")
 
-res = g.pathDijkstra(g.getNodeByName("Début"), g.getNodeByName("Fin"))
+res = g.pathDijkstraImproved(g.getNodeByName("Début"), g.getNodeByName("Fin"))
 #g.colorByDistance()
 
 for node in res:
