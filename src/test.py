@@ -64,7 +64,6 @@ g = Graph({
 }, "Test")
 
 res = g.pathDijkstra(g.getNodeByName("Début"), g.getNodeByName("Fin"))
-#g.colorByDistance()
 
 for node in res:
     print(node.getName())
