@@ -341,6 +341,16 @@ class Graph:
                 return node
         return None
 
+    def getNodeById(self, id):
+        """
+        Returns the `Node` of this graph which has for id `id`
+        """
+
+        for node in self._nodes:
+            if node.getId() == id:
+                return node
+        return None
+
     def unmarkAll(self):
         """
         Unmark all the nodes of the graph
