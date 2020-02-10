@@ -32,6 +32,7 @@ class Node:
         self._marked = False
         self._name = name
         self._distance = math.inf
+        self._cost = math.inf
         self._color = 'black'
         self._predecesor = None
         self._edges = []
@@ -57,6 +58,13 @@ class Node:
         """
 
         self._distance = distance
+
+    def setCost(self, cost):
+        """
+        Set the node's cost to `cost`
+        """
+
+        self._cost = cost
 
     def setColor(self, color):
         """
@@ -88,6 +96,18 @@ class Node:
             return edge.getSecond()
         else:
             return edge.getFirst()
+
+    def distanceTo(self, node):
+        """
+        Returns the distance from this node to `node` compared to their coordinates
+        """
+
+        (x1, y1) = self._coordinates
+        (x2, y2) = node._coordinates
+
+        return math.sqrt((x2 - x1)**2 + (y2 - y1)**2) #Norme 2
+        #return abs(x2 - x1) + abs(y2 - y1) #Norme 1
+        #return max(x2 - x1, y2 - y1) #Norme inf
 
     def getId(self):
         """
@@ -126,10 +146,17 @@ class Node:
 
     def getDistance(self):
         """
-        Get the node's distance
+        Returns the node's distance
         """
 
         return self._distance
+
+    def getCost(self):
+        """
+        Returns the node's cost
+        """
+        
+        return self._cost
 
     def getColor(self):
         """
@@ -140,7 +167,7 @@ class Node:
 
     def getPredecessor(self):
         """
-        Get the node's predecessor
+        Returns the node's predecessor
         """
 
         return self._predecesor
@@ -314,6 +341,16 @@ class Graph:
                 return node
         return None
 
+    def getNodeById(self, id):
+        """
+        Returns the `Node` of this graph which has for id `id`
+        """
+
+        for node in self._nodes:
+            if node.getId() == id:
+                return node
+        return None
+
     def unmarkAll(self):
         """
         Unmark all the nodes of the graph
@@ -344,7 +381,7 @@ class Graph:
 
     def path(self, start, end):
         """
-        Returns an array of `Node` which represents a path from node `start` to node `end`
+        Returns an array of `Node` which represents a path, with the minimum of nodes, from node `start` to node `end`
         """
     
         waitList = []
@@ -381,6 +418,10 @@ class Graph:
             node.setColor(colors[distance])
 
     def pathDijkstra(self, start, end):
+        """
+        Returns an array of `Node` which represents the shortest path from node `start` to node `end` using Dijkstra algorithm
+        """
+
         start.setDistance(0)
         current = start
 
@@ -420,6 +461,67 @@ class Graph:
                     best = node
                     continue
                 if node.getDistance() < best.getDistance():
+                    best = node
+
+            current = best
+
+        #Compute final path
+        path = []
+        predecessor = current
+
+        while predecessor != None:
+            path.insert(0, predecessor)
+            predecessor = predecessor.getPredecessor()
+
+        return path
+
+    def pathAStar(self, start, end):
+        """
+        Returns an array of `Node` which represents a good path from node `start` to node `end` using A* algorithm
+        """
+
+        start.setDistance(0)
+        start.setCost(0)
+        current = start
+
+        toBeTreated = [current]
+
+        while current != end:
+            current.mark() #Le noeud a une distance definitive
+            toBeTreated.remove(current) #On supprime le noeud choisit de la liste des noeuds a traiter car il a maintenant une distance definitive
+
+            #On calcule la distance des voisins et on prend le plus proche auquel on definie sa distance comme definitive (en le marquant et le supprimant de la liste a la prochaine boucle)
+            best = None
+            bestCost = math.inf
+
+            for edge in current.getEdges():
+                neighbor = current.neighborFrom(edge)
+
+                if neighbor.isMarked():
+                    continue
+
+                toBeTreated.append(neighbor) #On ajoute tous les noeuds a la liste de noeuds a traiter
+
+                distance = current.getDistance() + edge.getLength()
+                cost = distance + current.distanceTo(end)
+
+                if cost < neighbor.getCost(): #Si la distance etait deja calcule et plus petite alors on la touche pas
+                    neighbor.setDistance(distance)
+                    neighbor.setCost(cost)
+                    neighbor.setPredecessor(current)
+                else:
+                    cost = neighbor.getCost()
+
+                if cost < bestCost:
+                    best = neighbor
+                    bestCost = cost
+
+            #On cherche le meilleur noeud
+            for node in toBeTreated:
+                if best == None:
+                    best = node
+                    continue
+                if node.getCost() < best.getCost():
                     best = node
 
             current = best
