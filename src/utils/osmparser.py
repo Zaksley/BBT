@@ -1,13 +1,12 @@
-from graphes import *
-import folium
+import utils.graphes, folium
 
 class OSMParser:
     """
     Static class that contains functions to convert OSM data fetched with overpy to a `Graph`
     """
-
+    
     @staticmethod    
-    def QueryToGraph(osmquery, fmap):
+    def queryToGraph(osmquery, fmap):
         """
         Convert an Overpy query to a routable `Graph`
         """
@@ -23,7 +22,7 @@ class OSMParser:
             raise Exception("Empty ways data")
 
         #Create the graph
-        graph = Graph()
+        graph = utils.graphes.Graph()
 
         #Count how many time a node is referenced in ways
         #To gain time at the same time save coords of each node

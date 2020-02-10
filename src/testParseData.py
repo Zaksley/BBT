@@ -1,5 +1,5 @@
 import overpy, folium, webbrowser
-from utils.osmparser import OSMParser
+import utils.osmparser
 
 ### OSM part ###
 api = overpy.Overpass()
@@ -34,7 +34,7 @@ print("Start drawing path...")
     for j in range(len(nodes) - 2):
         map.add_child(folium.PolyLine([(nodes[j].lat, nodes[j].lon), (nodes[j+1].lat, nodes[j+1].lon)]))"""
 
-graph = OSMParser.QueryToGraph(tree, map)
+graph = utils.osmparser.OSMParser.queryToGraph(tree, map)
 
 print("Path have been drawned")
 
