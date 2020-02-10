@@ -26,7 +26,7 @@ class Node:
         The name of the node
     """
 
-    def __init__(self, id, latitude, longitude, name = ""):
+    def __init__(self, id, latitude=0, longitude=0, name = ""):
         self._id = id
         self._coordinates = (latitude, longitude)
         self._marked = False
@@ -58,6 +58,13 @@ class Node:
         """
 
         self._distance = distance
+
+    def setCoordinates(self, lat, lon):
+        """
+        Set node's coordinates to `(lat, lon)`
+        """
+
+        self._coordinates = (lat, lon)
 
     def setCost(self, cost):
         """
@@ -313,7 +320,7 @@ class Graph:
         The name of the graph
     """
 
-    def __init__(self, adj, name = ""):
+    def __init__(self, adj = {}, name = ""):
         self._nodes = []
         self._name = name
 
@@ -563,16 +570,6 @@ class Graph:
 
         f.writelines(lines)
 
-    @staticmethod
-    def open(path):
-        """
-        Returns a `Graph` opened from an osm file `path`
-        """
-
-        #Parse the xml osm file
-
-        pass
-
     def draw(self):
         """
         Draw the graph by creating a svg file with Graphviz and opening it in the web browser
@@ -586,3 +583,26 @@ class Graph:
 
         if ret == 0:
             webbrowser.open_new_tab("file://" + os.path.abspath('./tmp/tmp.txt.svg'))
+
+    def addNode(self, id, lon=0, lat=0, name=""):
+        """
+        Add a node to this graph with the specified `id`
+        """
+
+        node = Node(id, lon, lat, name)
+        self._nodes.append(node)
+         
+        return node
+
+    def addEdge(self, id, first, second, weight=1, name=""):
+        """
+        Add an edge between this graph's nodes `first` and `second` and definite them as neighbors
+        """
+
+        edge = Edge(id, first, second, weight, name)
+        first._addEdge(edge)
+        first._addNeighbor(second)
+
+        edge = Edge(id, second, first, weight, name)
+        second._addEdge(edge)
+        second._addNeighbor(first)
