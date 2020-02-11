@@ -2,6 +2,7 @@ import os
 import webbrowser
 import subprocess
 import math
+from utils.constants import R
 
 class Node:
     """
@@ -112,9 +113,7 @@ class Node:
         (x1, y1) = self._coordinates
         (x2, y2) = node._coordinates
 
-        return math.sqrt((x2 - x1)**2 + (y2 - y1)**2) #Norme 2
-        #return abs(x2 - x1) + abs(y2 - y1) #Norme 1
-        #return max(x2 - x1, y2 - y1) #Norme inf
+        return math.sqrt((x2 - x1)**2 + (y2 - y1)**2) * R
 
     def getId(self):
         """

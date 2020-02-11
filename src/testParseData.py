@@ -1,5 +1,6 @@
 import overpy, folium, webbrowser, random
 import utils.osmparser
+import math
 
 ### OSM part ###
 api = overpy.Overpass()
@@ -9,10 +10,10 @@ bxlat = 44.8333
 bxlon = -0.5667
 
 #Bounding box
-minlat = 44.7973
-minlon = -0.6480
+minlat = 44.8073
+minlon = -0.6280
 maxlat = 44.8250
-maxlon = -0.6156
+maxlon = -0.6056
 
 print("Start querying")
 tree = api.query(f"""
@@ -36,14 +37,34 @@ print("Map created")
 
 print("Converting to graph...")
 graph = utils.osmparser.OSMParser.queryToGraph(tree)
-
 print("Graph converted")
 
 nodes = graph.getNodes()
 size = len(nodes)
 
-print("Finding path...")
-path = graph.pathDijkstra(nodes[random.randint(0, size-1)], nodes[random.randint(0, size-1)])
+start = nodes[random.randint(0, size-1)]
+end = nodes[random.randint(0, size-1)]
+
+map.add_child(folium.Marker(start.getCoordinates(), popup='Start', tooltip='Start'))
+map.add_child(folium.Marker(end.getCoordinates(), popup='End', tooltip='End'))
+
+print("Finding path with A*...")
+path = graph.pathAStar(start, end)
+print(f"Path found\nIt contains {len(path)} nodes\nDrawing path...")
+
+for i in range(len(path)-1):
+    coord1 = path[i].getCoordinates()
+    coord2 = path[i+1].getCoordinates()
+    map.add_child(folium.PolyLine([(coord1[0], coord1[1]), (coord2[0], coord2[1])], color='red'))
+
+print("Reset graph")
+graph.unmarkAll()
+for node in nodes:
+    node.setDistance(math.inf)
+print("Done")
+
+print("Finding path with Dijkstra...")
+path = graph.pathDijkstra(start, end)
 print(f"Path found\nIt contains {len(path)} nodes\nDrawing path...")
 
 for i in range(len(path)-1):
@@ -51,7 +72,7 @@ for i in range(len(path)-1):
     coord2 = path[i+1].getCoordinates()
     map.add_child(folium.PolyLine([(coord1[0], coord1[1]), (coord2[0], coord2[1])]))
 
-print("Path have been drawned")
+print("Paths have been drawn")
 
 print("Start saving map...")
 map.save('./map.html')

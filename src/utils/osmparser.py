@@ -1,4 +1,6 @@
-import utils.graphes, folium
+import utils.graphes
+from math import sqrt, cos, sin, radians, atan2
+from utils.constants import R
 
 class OSMParser:
     """
@@ -10,12 +12,6 @@ class OSMParser:
         #For now we consider that the data are only roads
         nodes = osmquery.nodes
         ways = osmquery.ways
-
-        #Check if we actually have some data
-        if nodes == None:
-            raise Exception("Empty nodes data")
-        if ways == None:
-            raise Exception("Empty ways data")
 
         #Create the graph
         graph = utils.graphes.Graph()
@@ -81,13 +77,29 @@ class OSMParser:
                         #But for now we forget it"""
 
     @staticmethod
+    def geoDistance(lat1, lon1, lat2, lon2):
+        """
+        Returns the distance between two points giving their latitude and longitude
+        """
+
+        phi1 = radians(lat1)
+        phi2 = radians(lat2)
+        dphi = phi2 - phi1
+        dl = radians(lat2 - lat1)
+
+        a = sin(dphi/2)**2 + cos(phi1)*cos(phi2)*sin(dl/2)**2
+        c = 2*atan2(sqrt(a), sqrt(1-a))
+
+        return R * c
+
+    @staticmethod
     def queryToGraph(query):
         """
         Convert an Overpy query into a routable graph (beta) (not optimizd)
         """
 
         graph = utils.graphes.Graph()
-
+    
         for i in range(len(query.ways)):
             nodes = query.ways[i].nodes
             for j in range(len(nodes)-1):
@@ -102,6 +114,7 @@ class OSMParser:
                 if second == None:
                     second = graph.addNode(nextNode.id, nextNode.lat, nextNode.lon, nextNode.id)
 
-                graph.addEdge(query.ways[i].id, first, second)
+                distance = utils.osmparser.OSMParser.geoDistance(node.lat, node.lon, nextNode.lat, nextNode.lon)
+                graph.addEdge(query.ways[i].id, first, second, distance)
 
         return graph
