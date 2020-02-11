@@ -5,12 +5,8 @@ class OSMParser:
     Static class that contains functions to convert OSM data fetched with overpy to a `Graph`
     """
     
-    @staticmethod    
+    """@staticmethod    
     def queryToGraph(osmquery, fmap):
-        """
-        Convert an Overpy query to a routable `Graph`
-        """
-
         #For now we consider that the data are only roads
         nodes = osmquery.nodes
         ways = osmquery.ways
@@ -82,7 +78,30 @@ class OSMParser:
 
                     #if links == 1:
                         #It is only a geometry node so we could compute the lenght of the edge
-                        #But for now we forget it
+                        #But for now we forget it"""
 
+    @staticmethod
+    def queryToGraph(query):
+        """
+        Convert an Overpy query into a routable graph (beta) (not optimizd)
+        """
+
+        graph = utils.graphes.Graph()
+
+        for i in range(len(query.ways)):
+            nodes = query.ways[i].nodes
+            for j in range(len(nodes)-1):
+                node = nodes[j]
+                nextNode = nodes[j+1]
+
+                first = graph.getNodeById(node.id)
+                second = graph.getNodeById(nextNode.id)
+
+                if first == None:
+                    first = graph.addNode(node.id, node.lat, node.lon, node.id)
+                if second == None:
+                    second = graph.addNode(nextNode.id, nextNode.lat, nextNode.lon, nextNode.id)
+
+                graph.addEdge(query.ways[i].id, first, second)
 
         return graph
