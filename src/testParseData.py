@@ -26,7 +26,7 @@ print("Query's done")
 print("Nodes: %i" % len(tree.nodes))
 print("Ways: %i" % len(tree.ways))
 
-map = folium.Map((bxlat, bxlon))
+map = folium.Map((bxlat, bxlon), zoom_start=12)
 print("Map created")
 
 #Uncomment to just draw all roads
