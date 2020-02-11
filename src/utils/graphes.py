@@ -481,7 +481,7 @@ class Graph:
 
         return path
 
-    def pathAStar(self, start, end):
+    def pathAStar(self, start, end, weight=1):
         """
         Returns an array of `Node` which represents a good path from node `start` to node `end` using A* algorithm
         """
@@ -509,7 +509,7 @@ class Graph:
                 toBeTreated.append(neighbor) #On ajoute tous les noeuds a la liste de noeuds a traiter
 
                 distance = current.getDistance() + edge.getLength()
-                cost = distance + current.distanceTo(end)
+                cost = distance + weight * current.distanceTo(end)
 
                 if cost < neighbor.getCost(): #Si la distance etait deja calcule et plus petite alors on la touche pas
                     neighbor.setDistance(distance)

@@ -50,7 +50,8 @@ map.add_child(folium.Marker(end.getCoordinates(), popup='End', tooltip='End'))
 
 print("Finding path with A*...")
 path = graph.pathAStar(start, end)
-print(f"Path found\nIt contains {len(path)} nodes\nDrawing path...")
+distance = path[len(path)-1].getDistance()
+print(f"Path found\nIt contains {len(path)} nodes\nIts lenght is {distance}m\nDrawing path...")
 
 for i in range(len(path)-1):
     coord1 = path[i].getCoordinates()
@@ -65,7 +66,8 @@ print("Done")
 
 print("Finding path with Dijkstra...")
 path = graph.pathDijkstra(start, end)
-print(f"Path found\nIt contains {len(path)} nodes\nDrawing path...")
+distance = path[len(path)-1].getDistance()
+print(f"Path found\nIt contains {len(path)} nodes\nIts lenght is {distance}m\nDrawing path...")
 
 for i in range(len(path)-1):
     coord1 = path[i].getCoordinates()
