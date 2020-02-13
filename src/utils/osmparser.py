@@ -82,6 +82,7 @@ class OSMParser:
         Returns the distance between two points giving their latitude and longitude
         """
 
+        #Haversine formula
         phi1 = radians(lat1)
         phi2 = radians(lat2)
         dphi = phi2 - phi1

@@ -110,10 +110,22 @@ class Node:
         Returns the distance from this node to `node` compared to their coordinates
         """
 
-        (x1, y1) = self._coordinates
-        (x2, y2) = node._coordinates
+        (lat1, lon1) = self._coordinates
+        (lat2, lon2) = node._coordinates
 
-        return math.sqrt((x2 - x1)**2 + (y2 - y1)**2) * R
+        #Haversine formula
+        phi1 = math.radians(lat1)
+        phi2 = math.radians(lat2)
+        dphi = phi2 - phi1
+        dl = math.radians(lat2 - lat1)
+
+        a = math.sin(dphi/2)**2 + math.cos(phi1)*math.cos(phi2)*math.sin(dl/2)**2
+        c = 2*math.atan2(math.sqrt(a), math.sqrt(1-a))
+
+        return R * c
+
+        #Euclidian approximation
+        #return math.sqrt((lat2 - lat1)**2 + (lon2 - lon1)**2) * R
 
     def getId(self):
         """

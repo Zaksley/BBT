@@ -58,6 +58,10 @@ for i in range(len(path)-1):
     coord2 = path[i+1].getCoordinates()
     map.add_child(folium.PolyLine([(coord1[0], coord1[1]), (coord2[0], coord2[1])], color='red'))
 
+#Just to see where Dijkstra fail to find a path
+map.save('./map.html')
+webbrowser.open_new_tab('./map.html')
+
 print("Reset graph")
 graph.unmarkAll()
 for node in nodes:
