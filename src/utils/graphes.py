@@ -2,6 +2,7 @@ import os
 import webbrowser
 import subprocess
 import math
+from utils.constants import R
 
 class Node:
     """
@@ -26,7 +27,7 @@ class Node:
         The name of the node
     """
 
-    def __init__(self, id, latitude, longitude, name = ""):
+    def __init__(self, id, latitude=0, longitude=0, name = ""):
         self._id = id
         self._coordinates = (latitude, longitude)
         self._marked = False
@@ -58,6 +59,13 @@ class Node:
         """
 
         self._distance = distance
+
+    def setCoordinates(self, lat, lon):
+        """
+        Set node's coordinates to `(lat, lon)`
+        """
+
+        self._coordinates = (lat, lon)
 
     def setCost(self, cost):
         """
@@ -102,12 +110,22 @@ class Node:
         Returns the distance from this node to `node` compared to their coordinates
         """
 
-        (x1, y1) = self._coordinates
-        (x2, y2) = node._coordinates
+        (lat1, lon1) = self._coordinates
+        (lat2, lon2) = node._coordinates
 
-        return math.sqrt((x2 - x1)**2 + (y2 - y1)**2) #Norme 2
-        #return abs(x2 - x1) + abs(y2 - y1) #Norme 1
-        #return max(x2 - x1, y2 - y1) #Norme inf
+        #Haversine formula
+        phi1 = math.radians(lat1)
+        phi2 = math.radians(lat2)
+        dphi = phi2 - phi1
+        dl = math.radians(lat2 - lat1)
+
+        a = math.sin(dphi/2)**2 + math.cos(phi1)*math.cos(phi2)*math.sin(dl/2)**2
+        c = 2*math.atan2(math.sqrt(a), math.sqrt(1-a))
+
+        return R * c
+
+        #Euclidian approximation
+        #return math.sqrt((lat2 - lat1)**2 + (lon2 - lon1)**2) * R
 
     def getId(self):
         """
@@ -313,7 +331,7 @@ class Graph:
         The name of the graph
     """
 
-    def __init__(self, adj, name = ""):
+    def __init__(self, adj = {}, name = ""):
         self._nodes = []
         self._name = name
 
@@ -475,7 +493,7 @@ class Graph:
 
         return path
 
-    def pathAStar(self, start, end):
+    def pathAStar(self, start, end, weight=1):
         """
         Returns an array of `Node` which represents a good path from node `start` to node `end` using A* algorithm
         """
@@ -503,7 +521,7 @@ class Graph:
                 toBeTreated.append(neighbor) #On ajoute tous les noeuds a la liste de noeuds a traiter
 
                 distance = current.getDistance() + edge.getLength()
-                cost = distance + current.distanceTo(end)
+                cost = distance + weight * current.distanceTo(end)
 
                 if cost < neighbor.getCost(): #Si la distance etait deja calcule et plus petite alors on la touche pas
                     neighbor.setDistance(distance)
@@ -563,16 +581,6 @@ class Graph:
 
         f.writelines(lines)
 
-    @staticmethod
-    def open(path):
-        """
-        Returns a `Graph` opened from an osm file `path`
-        """
-
-        #Parse the xml osm file
-
-        pass
-
     def draw(self):
         """
         Draw the graph by creating a svg file with Graphviz and opening it in the web browser
@@ -586,3 +594,26 @@ class Graph:
 
         if ret == 0:
             webbrowser.open_new_tab("file://" + os.path.abspath('./tmp/tmp.txt.svg'))
+
+    def addNode(self, id, lon=0, lat=0, name=""):
+        """
+        Add a node to this graph with the specified `id`
+        """
+
+        node = Node(id, lon, lat, name)
+        self._nodes.append(node)
+         
+        return node
+
+    def addEdge(self, id, first, second, weight=1, name=""):
+        """
+        Add an edge between this graph's nodes `first` and `second` and definite them as neighbors
+        """
+
+        edge = Edge(id, first, second, weight, name)
+        first._addEdge(edge)
+        first._addNeighbor(second)
+
+        edge = Edge(id, second, first, weight, name)
+        second._addEdge(edge)
+        second._addNeighbor(first)
