@@ -521,7 +521,7 @@ class Graph:
                 toBeTreated.append(neighbor) #On ajoute tous les noeuds a la liste de noeuds a traiter
 
                 distance = current.getDistance() + edge.getLength()
-                cost = distance + weight * current.distanceTo(end)
+                cost = distance + weight * neighbor.distanceTo(end)
 
                 if cost < neighbor.getCost(): #Si la distance etait deja calcule et plus petite alors on la touche pas
                     neighbor.setDistance(distance)
