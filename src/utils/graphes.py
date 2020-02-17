@@ -2,7 +2,7 @@ import os
 import webbrowser
 import subprocess
 import math
-from utils.constants import R
+from .constants import R
 
 class Node:
     """
