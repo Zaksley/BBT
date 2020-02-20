@@ -99,6 +99,7 @@ class OSMParser:
         Convert an Overpy query into a routable graph (beta) (not optimizd)
         """
 
+<<<<<<< HEAD
         #Type of road 
         forbidden = ['motorway', 'motorway_link', 'trunk', 'trunk_link', 'steps']
 
@@ -106,10 +107,14 @@ class OSMParser:
         normal = ['footway', 'path', 'track', 'residential', 'unclassified', 'service', 'tertiary']
         unsafe = ['secondary']
         very_unsafe = ['primary']
+=======
+        forbidden = ["motorway", "trunk", "motorway_link", "trunk_link", "steps"]
+>>>>>>> refs/remotes/origin/dev
 
         graph = utils.graphes.Graph()
     
         for i in range(len(query.ways)):
+<<<<<<< HEAD
             tag = query.ways[i].tags["highway"]
             if tag in forbidden:
                 continue
@@ -122,6 +127,12 @@ class OSMParser:
             elif tag in unsafe: safety = 'unsafe'
             elif tag in very_unsafe: safety = 'very_unsafe'
 
+=======
+            if query.ways[i].tags["highway"] in forbidden:
+                print("Way skipped")
+                continue
+
+>>>>>>> refs/remotes/origin/dev
             nodes = query.ways[i].nodes
             for j in range(len(nodes)-1):
                 node = nodes[j]
