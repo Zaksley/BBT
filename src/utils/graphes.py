@@ -234,6 +234,8 @@ class Edge:
         self._length = length
         self._marked = False
         self._name = ""
+        self._safe = ""
+        self._comfort = ""
 
     def getId(self):
         """
@@ -262,6 +264,20 @@ class Edge:
         """
 
         return self._length
+
+    def getSafety(self):
+        """
+        Returns the safety of the edge
+        """
+
+        return self._safe
+
+    def getComfort(self):
+        """
+        Returns the comfort of the edge
+        """
+
+        return self._comfort
 
     def mark(self):
         """
@@ -605,15 +621,19 @@ class Graph:
          
         return node
 
-    def addEdge(self, id, first, second, weight=1, name=""):
+    def addEdge(self, id, first, second, weight=1, safe = "", comfort = "",  name=""):
         """
         Add an edge between this graph's nodes `first` and `second` and definite them as neighbors
         """
 
         edge = Edge(id, first, second, weight, name)
+        edge._safe = safe
+        edge._comfort = comfort
         first._addEdge(edge)
         first._addNeighbor(second)
 
         edge = Edge(id, second, first, weight, name)
+        edge._safe = safe
+        edge._comfort = comfort
         second._addEdge(edge)
         second._addNeighbor(first)

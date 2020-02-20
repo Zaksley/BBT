@@ -99,9 +99,29 @@ class OSMParser:
         Convert an Overpy query into a routable graph (beta) (not optimizd)
         """
 
+        #Type of road 
+        forbidden = ['motorway', 'motorway_link', 'trunk', 'trunk_link', 'steps']
+
+        safe = ['cycleway', 'pedestrian']
+        normal = ['footway', 'path', 'track', 'residential', 'unclassified', 'service', 'tertiary']
+        unsafe = ['secondary']
+        very_unsafe = ['primary']
+
         graph = utils.graphes.Graph()
     
         for i in range(len(query.ways)):
+            tag = query.ways[i].tags["highway"]
+            if tag in forbidden:
+                continue
+
+            safety = ""
+            comfort = ""
+            #Add attribut type to edge
+            if tag in safe: safety = 'safe'
+            elif tag in normal: safety = 'normal'
+            elif tag in unsafe: safety = 'unsafe'
+            elif tag in very_unsafe: safety = 'very_unsafe'
+
             nodes = query.ways[i].nodes
             for j in range(len(nodes)-1):
                 node = nodes[j]
@@ -116,6 +136,6 @@ class OSMParser:
                     second = graph.addNode(nextNode.id, nextNode.lat, nextNode.lon, nextNode.id)
 
                 distance = utils.osmparser.OSMParser.geoDistance(node.lat, node.lon, nextNode.lat, nextNode.lon)
-                graph.addEdge(query.ways[i].id, first, second, distance)
+                graph.addEdge(query.ways[i].id, first, second, distance, safety, comfort)
 
         return graph
