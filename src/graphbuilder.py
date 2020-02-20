@@ -29,7 +29,7 @@ for opt, arg in opts:
         print("ERROR in options")
         sys.exit(1)
 
-if len(args) > 1:
+if len(args) > 1 or len(args) == 0:
     print("ERROR: too many args")
     usage()
     sys.exit(1)
