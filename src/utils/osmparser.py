@@ -99,9 +99,15 @@ class OSMParser:
         Convert an Overpy query into a routable graph (beta) (not optimizd)
         """
 
+        forbidden = ["motorway", "trunk", "motorway_link", "trunk_link", "steps"]
+
         graph = utils.graphes.Graph()
     
         for i in range(len(query.ways)):
+            if query.ways[i].tags["highway"] in forbidden:
+                print("Way skipped")
+                continue
+
             nodes = query.ways[i].nodes
             for j in range(len(nodes)-1):
                 node = nodes[j]
