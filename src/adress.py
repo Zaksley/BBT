@@ -8,7 +8,7 @@ print("Map created")
 
 
 def UserEntry() :
-    entry = input("Choisir votre adresse :")
+    entry = input("Choisir votre adresse : ")
     entry = entry.split()
     separator = '+'
     adress = separator.join(entry)
@@ -16,14 +16,15 @@ def UserEntry() :
     return adress
 
 adress = UserEntry()
-jsonFocus = requests.get('https://nominatim.openstreetmap.org/search?q=' + adress +'&format=json&countrycodes=fr').json()
+result = requests.get('https://nominatim.openstreetmap.org/search?q=' + adress +'&format=json&countrycodes=fr').json()
 print("finding your adress")
 
-for i in range(len(jsonFocus)) :
+print(result)
+for i in range(len(result)) :
     
-    latfocus = jsonFocus[i]['lat']
-    lonfocus = jsonFocus[i]['lon']
-    map.add_child(folium.Marker([latfocus,lonfocus], popup=i, tooltip=i))
+    lat = result[i]['lat']
+    lon = result[i]['lon']
+    map.add_child(folium.Marker([lat,lon], popup=i, tooltip=i))
 
 
 
