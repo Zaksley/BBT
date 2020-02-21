@@ -102,10 +102,17 @@ class OSMParser:
         #Type of road 
         forbidden = ['motorway', 'motorway_link', 'trunk', 'trunk_link', 'steps']
 
-        safe = ['cycleway', 'pedestrian']
-        normal = ['footway', 'path', 'track', 'residential', 'unclassified', 'service', 'tertiary']
+        #Comfort
+        safe = ['cycleway', 'pedestrian', 'path', 'footway']
+        normal = ['track', 'residential', 'unclassified', 'service', 'tertiary']
         unsafe = ['secondary']
         very_unsafe = ['primary']
+
+        #Safety 
+        comfortable = ['cycleway', 'tertiary', 'primary', 'residential']
+        medium_comfort = ['path', 'footway' ]
+        uncomfortable = ['unclassified']
+        very_uncomfortable = ['track']
 
         graph = utils.graphes.Graph()
     
@@ -116,11 +123,17 @@ class OSMParser:
 
             safety = ""
             comfort = ""
-            #Add attribut type to edge
+            #Add attribut safety to edge
             if tag in safe: safety = 'safe'
             elif tag in normal: safety = 'normal'
             elif tag in unsafe: safety = 'unsafe'
             elif tag in very_unsafe: safety = 'very_unsafe'
+
+            #Add attribut comfort to edge
+            if tag in comfortable: comfort = 'comfort'
+            elif tag in medium_comfort: comfort = 'medium_comfort'
+            elif tag in uncomfortable: comfort = 'uncomfortable'
+            elif tag in very_uncomfortable: comfort = 'very_uncomfortable'
 
             nodes = query.ways[i].nodes
             for j in range(len(nodes)-1):

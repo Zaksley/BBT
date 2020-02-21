@@ -31,11 +31,14 @@ for i in range(len(path)-1):
     coord2 = path[i+1].getCoordinates()
     edge = Edge.between(path[i], path[i+1])
 
+    #Safety color
     c = 'red'
     if edge.getSafety() == "safe":  c = 'green'
     elif edge.getSafety() == "normal":  c= 'blue'
     elif edge.getSafety() == "unsafe": c='orange'
     elif edge.getSafety() == "very_unsafe": c='black'
+
+    #Comfort color
         
 
     map.add_child(folium.PolyLine([(coord1[0], coord1[1]), (coord2[0], coord2[1])], color=c))
