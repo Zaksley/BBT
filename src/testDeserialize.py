@@ -7,7 +7,7 @@ bxlat = 44.8333
 bxlon = -0.5667
 
 print("Deserializing graph...")
-graph = utils.graphserializer.deserialize("./graph.pkl")
+graph = utils.graphserializer.deserialize("./test.pkl")
 print("Graph have been deserialized")
 
 nodes = graph.getNodes()
@@ -44,13 +44,12 @@ for i in range(len(path)-1):
     map.add_child(folium.PolyLine([(coord1[0], coord1[1]), (coord2[0], coord2[1])], color=c))
 
 
-print("Reset graph")
+"""print("Reset graph")
 graph.unmarkAll()
 for node in nodes:
     node.setDistance(math.inf)
 print("Done")
 
-"""
 print("Finding path with Dijkstra...")
 path = graph.pathDijkstra(start, end)
 distance = path[len(path)-1].getDistance()

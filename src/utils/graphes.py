@@ -514,6 +514,18 @@ class Graph:
         Returns an array of `Node` which represents a good path from node `start` to node `end` using A* algorithm
         """
 
+        def appendSorted(array, node):
+            if len(array) == 0:
+                array.append(node)
+                return
+
+            for i in range(len(array)):
+                if node.getCost() <= array[i].getCost():
+                    array.insert(i, node)
+                    return
+
+            array.append(node)
+
         start.setDistance(0)
         start.setCost(0)
         current = start
@@ -525,16 +537,11 @@ class Graph:
             toBeTreated.remove(current) #On supprime le noeud choisit de la liste des noeuds a traiter car il a maintenant une distance definitive
 
             #On calcule la distance des voisins et on prend le plus proche auquel on definie sa distance comme definitive (en le marquant et le supprimant de la liste a la prochaine boucle)
-            best = None
-            bestCost = math.inf
-
             for edge in current.getEdges():
                 neighbor = current.neighborFrom(edge)
 
                 if neighbor.isMarked():
                     continue
-
-                toBeTreated.append(neighbor) #On ajoute tous les noeuds a la liste de noeuds a traiter
 
                 distance = current.getDistance() + edge.getLength()
                 cost = distance + weight * neighbor.distanceTo(end)
@@ -543,22 +550,11 @@ class Graph:
                     neighbor.setDistance(distance)
                     neighbor.setCost(cost)
                     neighbor.setPredecessor(current)
-                else:
-                    cost = neighbor.getCost()
+                #else: Bah rien
 
-                if cost < bestCost:
-                    best = neighbor
-                    bestCost = cost
+                appendSorted(toBeTreated, neighbor) #On ajoute tous les noeuds a la liste de noeuds a traiter
 
-            #On cherche le meilleur noeud
-            for node in toBeTreated:
-                if best == None:
-                    best = node
-                    continue
-                if node.getCost() < best.getCost():
-                    best = node
-
-            current = best
+            current = toBeTreated[0]
 
         #Compute final path
         path = []

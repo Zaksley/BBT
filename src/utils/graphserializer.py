@@ -25,7 +25,7 @@ def download_save(minlat, minlon, maxlat, maxlon, path):
     print("Graph have been parsed")
 
     lim = sys.getrecursionlimit()
-    sys.setrecursionlimit(10000)
+    sys.setrecursionlimit(1000000)
 
     try:
         f = open(path, "wb")
