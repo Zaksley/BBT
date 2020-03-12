@@ -13,8 +13,8 @@ print("Graph have been deserialized")
 nodes = graph.getNodes()
 size = len(nodes)
 
-start = nodes[random.randint(0, size-1)]
-end = nodes[random.randint(0, size-1)]
+start = nodes[0]#random.randint(0, size-1)]
+end = nodes[size-1]#random.randint(0, size-1)]
 
 map = folium.Map((bxlat, bxlon), zoom_start=13)
 

@@ -2,6 +2,7 @@ import overpy, folium, webbrowser, random
 import utils.osmparser
 import networkx
 import pickle
+import math
 
 #Bounding box
 minlat = 44.7973
@@ -102,8 +103,14 @@ print("Map created")
 nodes = list(graph.nodes)
 size = len(nodes)
 
-start = nodes[random.randint(0, size-1)]
-end = nodes[random.randint(0, size-1)]
+i = 28665#random.randint(0, size-1)
+j = 522#random.randint(0, size-1)
+
+print("start: " + str(i))
+print("end: " + str(j))
+
+start = nodes[i]
+end = nodes[j]
 
 map.add_child(folium.Marker((start.lat, start.lon), "Start", "Start"))
 map.add_child(folium.Marker((end.lat, end.lon), "End", "End"))
