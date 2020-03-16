@@ -22,19 +22,15 @@ class Node:
 
     `longitude` : float
         The node's longitude
-
-    `name` : str, optionnal
-        The name of the node
     """
 
     def __init__(self, id, latitude=0, longitude=0, name = ""):
         self._id = id
-        self._coordinates = (latitude, longitude)
+        self._lat = latitude
+        self._lon = longitude
         self._marked = False
-        self._name = name
         self._distance = math.inf
         self._cost = math.inf
-        self._color = 'black'
         self._predecesor = None
         self._edges = []
         self._neighbors = []
@@ -65,7 +61,8 @@ class Node:
         Set node's coordinates to `(lat, lon)`
         """
 
-        self._coordinates = (lat, lon)
+        self._lat = lat
+        self._lon = lon
 
     def setCost(self, cost):
         """
@@ -73,13 +70,6 @@ class Node:
         """
 
         self._cost = cost
-
-    def setColor(self, color):
-        """
-        Set the node's color to `color` 
-        """
-
-        self._color = color
 
     def setPredecessor(self, predecessor):
         """
@@ -95,23 +85,13 @@ class Node:
 
         return self._marked
 
-    def neighborFrom(self, edge):
-        """
-        Returns the `Node` linked to this node by `edge`
-        """
-
-        if edge.getFirst() == self:
-            return edge.getSecond()
-        else:
-            return edge.getFirst()
-
     def distanceTo(self, node):
         """
         Returns the distance from this node to `node` compared to their coordinates
         """
 
-        (lat1, lon1) = self._coordinates
-        (lat2, lon2) = node._coordinates
+        lat1 = self._lat
+        lat2 = node._lat
 
         #Haversine formula
         phi1 = math.radians(lat1)
@@ -134,19 +114,12 @@ class Node:
 
         return self._id
 
-    def getName(self):
-        """
-        Returns node's ID relative to OSM data
-        """
-
-        return self._name
-
     def getCoordinates(self):
         """
         Returns a `Tuple` with node's latitude and longitude coordinates
         """
 
-        return self._coordinates
+        return (self._lat, self._lon)
 
     def getNeighbors(self):
         """
@@ -157,7 +130,7 @@ class Node:
 
     def getEdges(self):
         """
-        Returns the `list` of node's egdes
+        Returns the `list` of node's egdes's id
         """
 
         return self._edges
@@ -176,13 +149,6 @@ class Node:
         
         return self._cost
 
-    def getColor(self):
-        """
-        Returns the node's color
-        """
-
-        return self._color
-
     def getPredecessor(self):
         """
         Returns the node's predecessor
@@ -190,19 +156,19 @@ class Node:
 
         return self._predecesor
 
-    def _addEdge(self, e):
+    def _addEdge(self, id):
         """
-        Add an edge to the node's list of edges
-        """
-
-        self._edges.append(e)
-
-    def _addNeighbor(self, n):
-        """
-        Add a node to the node's list of neighbors
+        Add the edge `id` to the node's list of edges
         """
 
-        self._neighbors.append(n)
+        self._edges.append(id)
+
+    def _addNeighbor(self, id):
+        """
+        Add the neighbor `id` to the node's list of neighbors
+        """
+
+        self._neighbors.append(id)
 
 class Edge:
     """
@@ -222,18 +188,14 @@ class Edge:
 
     `second` : Node
         The node where this edge ends
-
-    `name` : str, optionnal
-        The name of the edge
     """
 
-    def __init__(self, id, first, second, length = 1, name = ""):
+    def __init__(self, id, first, second, length = 1):
         self._id = id
         self._first = first
         self._second = second
         self._length = length
         self._marked = False
-        self._name = ""
         self._safe = ""
         self._comfort = ""
 
@@ -284,22 +246,14 @@ class Edge:
         Mark this edge and its reverse
         """
 
-        #Mark this edge
         self._marked = True
-
-        #Mark the same edge but for the other node
-        Edge.between(self._second, self._first)._marked = True
 
     def unmark(self):
         """
         Unmark this edge and its reverse
         """
 
-        #Unmark this edge
         self._marked = False
-
-        #Unmark the same edge but for the other node
-        Edge.between(self._second, self._first)._marked = False
 
     def isMarked(self):
         """
@@ -307,20 +261,6 @@ class Edge:
         """
 
         return self._marked
-
-    @staticmethod
-    def between(first, second):
-        """
-        Returns the `Edge` which starts from node `first` and ends to `second`
-
-        Returns `None` if this edge does't exist
-        """
-
-        for edge in first.getEdges():
-            if first.neighborFrom(edge) == second:
-                return edge
-
-        return None
 
     def __eq__(self, other):
         if self._first == other._first:
@@ -340,51 +280,34 @@ class Graph:
     Parameters
     ==========
 
-    `adj` : dict of `Node`
-        The list of adjacency
-
     `name` : str, optionnal
         The name of the graph
     """
 
-    def __init__(self, adj = {}, name = ""):
-        self._nodes = []
+    def __init__(self, name=""):
+        self._nodes = {}
+        self._edges = {}
         self._name = name
 
-        for node in adj.keys():
-            for (neighbor, length) in adj[node]:
-                node._addNeighbor(neighbor)
-                node._addEdge(Edge(0, node, neighbor, length))
-
-            self._nodes.append(node)
-
+    #On retourne les vrais noeuds ?
     def getNodes(self):
         """
         Returns the list of all nodes in this graph
         """
 
-        return self._nodes
+        return self._nodes.values()
 
-    def getNodeByName(self, name):
-        """
-        Returns the `Node` of this graph which is named `name`
-        """
-
-        for node in self._nodes:
-            if node.getName() == name:
-                return node
-        return None
-
-    def getNodeById(self, id):
+    def getNode(self, id):
         """
         Returns the `Node` of this graph which has for id `id`
         """
 
-        for node in self._nodes:
-            if node.getId() == id:
-                return node
+        for node in self._nodes.keys():
+            if node == id:
+                return node[id]
         return None
 
+    # A modifier en utilisant le dico
     def unmarkAll(self):
         """
         Unmark all the nodes of the graph
@@ -395,241 +318,54 @@ class Graph:
                 e.unmark()
             s.unmark()
 
-    def _reversePath(self, start, end):
-        """
-        Return the path from `start` to `end` in a colored/marked graph
-        """
-
-        path = [end]
-
-        current = end
-
-        while current.getDistance() > 0:
-            for edge in current.getEdges():
-                neighbor = current.neighborFrom(edge)
-                if edge.isMarked() and neighbor.getDistance() == current.getDistance() - 1:
-                    path.insert(0, neighbor)
-                    current = neighbor
-
-        return path
-
-    def path(self, start, end):
-        """
-        Returns an array of `Node` which represents a path, with the minimum of nodes, from node `start` to node `end`
-        """
-    
-        waitList = []
-        start.setDistance(0)
-        start.mark()
-        waitList.append(start)
-
-        while len(waitList) != 0:
-            current = waitList.pop(0)
-
-            if current == end:
-                return self._reversePath(start, end)
-            
-            for neighbor in current.getNeighbors():
-                if not neighbor.isMarked():
-                    neighbor.mark()
-                    Edge.between(current, neighbor).mark()
-                    neighbor.setDistance(current.getDistance() + 1)
-                    waitList.append(neighbor)
-    
-    def colorByDistance(self):
-        """
-        Color all the nodes beside to their distance
-        """
-        
-        colors = {
-            0: 'black', 1: 'red', 2: 'green', 3: 'blue', 4: 'yellow',
-            5: 'orange', 6: 'olive', 7: 'aqua', 8: 'indigo',
-            9: 'tomato'
-        }
-
-        for node in self._nodes:
-            distance = node.getDistance() if 0 <= node.getDistance() <= 9 else 0 
-            node.setColor(colors[distance])
-
-    def pathDijkstra(self, start, end):
-        """
-        Returns an array of `Node` which represents the shortest path from node `start` to node `end` using Dijkstra algorithm
-        """
-
-        start.setDistance(0)
-        current = start
-
-        toBeTreated = [current]
-
-        while current != end:
-            current.mark() #Le noeud a une distance definitive
-            toBeTreated.remove(current) #On supprime le noeud choisit de la liste des noeuds a traiter car il a maintenant une distance definitive
-
-            #On calcule la distance des voisins et on prend le plus proche auquel on definie sa distance comme definitive (en le marquant et le supprimant de la liste a la prochaine boucle)
-            best = None
-            bestDist = math.inf
-
-            for edge in current.getEdges():
-                neighbor = current.neighborFrom(edge)
-
-                if neighbor.isMarked():
-                    continue
-
-                toBeTreated.append(neighbor) #On ajoute tous les noeuds a la liste de noeuds a traiter
-
-                distance = current.getDistance() + edge.getLength()
-
-                if distance < neighbor.getDistance(): #Si la distance etait deja calcule et plus petite alors on la touche pas
-                    neighbor.setDistance(distance)
-                    neighbor.setPredecessor(current)
-                else:
-                    distance = neighbor.getDistance()
-
-                if distance < bestDist:
-                    best = neighbor
-                    bestDist = distance
-
-            #On cherche le meilleur noeud
-            for node in toBeTreated:
-                if best == None:
-                    best = node
-                    continue
-                if node.getDistance() < best.getDistance():
-                    best = node
-
-            current = best
-
-        #Compute final path
-        path = []
-        predecessor = current
-
-        while predecessor != None:
-            path.insert(0, predecessor)
-            predecessor = predecessor.getPredecessor()
-
-        return path
-
-    def pathAStar(self, start, end, weight=1):
-        """
-        Returns an array of `Node` which represents a good path from node `start` to node `end` using A* algorithm
-        """
-
-        def appendSorted(array, node):
-            if len(array) == 0:
-                array.append(node)
-                return
-
-            for i in range(len(array)):
-                if node.getCost() <= array[i].getCost():
-                    array.insert(i, node)
-                    return
-
-            array.append(node)
-
-        start.setDistance(0)
-        start.setCost(0)
-        current = start
-
-        toBeTreated = [current]
-
-        while current != end:
-            current.mark() #Le noeud a une distance definitive
-            toBeTreated.remove(current) #On supprime le noeud choisit de la liste des noeuds a traiter car il a maintenant une distance definitive
-
-            #On calcule la distance des voisins et on prend le plus proche auquel on definie sa distance comme definitive (en le marquant et le supprimant de la liste a la prochaine boucle)
-            for edge in current.getEdges():
-                neighbor = current.neighborFrom(edge)
-
-                if neighbor.isMarked():
-                    continue
-
-                distance = current.getDistance() + edge.getLength()
-                cost = distance + weight * neighbor.distanceTo(end)
-
-                if cost < neighbor.getCost(): #Si la distance etait deja calcule et plus petite alors on la touche pas
-                    neighbor.setDistance(distance)
-                    neighbor.setCost(cost)
-                    neighbor.setPredecessor(current)
-                #else: Bah rien
-
-                appendSorted(toBeTreated, neighbor) #On ajoute tous les noeuds a la liste de noeuds a traiter
-
-            current = toBeTreated[0]
-
-        #Compute final path
-        path = []
-        predecessor = current
-
-        while predecessor != None:
-            path.insert(0, predecessor)
-            predecessor = predecessor.getPredecessor()
-
-        return path
-
-    def save(self, path):
-        """
-        Save the graph to dot format at `path` so it can be displayed by Graphviz
-        """
-
-        f = open(path, "w", encoding="utf8")
-        lines = [
-            f'graph "{self._name}"' + ' {\n',
-            "rankdir=LR ratio=.5 node[shape=box style=filled]\n"]
-        passed_egdes = []
-
-        for node in self._nodes:
-            for edge in node.getEdges():
-                neighbor = node.neighborFrom(edge)
-                if not edge in passed_egdes:
-                    if edge.isMarked():
-                        lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}" [color = red, label = {edge.getLength()}];\n')
-                    else: lines.append(f'  "{node.getName()}" -- "{neighbor.getName()}" [label = {edge.getLength()}];\n')
-                    passed_egdes.append(edge)
-            if node.isMarked():
-                lines.append(f'  "{node.getName()}" [fillcolor = {node.getColor()}, fontcolor = white, color = white, label = "{node.getName()} ({node.getDistance()})"];\n')
-            else: lines.append(f'  "{node.getName()}" [fillcolor = white, fontcolor = black, color = black, label = "{node.getName()} ({node.getDistance()})"];\n')
-        
-        lines.append("}")
-
-        f.writelines(lines)
-
-    def draw(self):
-        """
-        Draw the graph by creating a svg file with Graphviz and opening it in the web browser
-        """
-
-        if not os.path.exists("./tmp"):
-            os.mkdir("./tmp")
-        self.save("./tmp/tmp.txt")
-
-        ret = subprocess.call(['dot', '-Tsvg', '-O', os.path.abspath('./tmp/tmp.txt')])
-
-        if ret == 0:
-            webbrowser.open_new_tab("file://" + os.path.abspath('./tmp/tmp.txt.svg'))
-
     def addNode(self, id, lon=0, lat=0, name=""):
         """
         Add a node to this graph with the specified `id`
         """
 
         node = Node(id, lon, lat, name)
-        self._nodes.append(node)
+        self._nodes[id] = node
          
         return node
 
-    def addEdge(self, id, first, second, weight=1, safe = "", comfort = "",  name=""):
+    def addEdge(self, id, first, second, weight=1, safe="", comfort="",  name=""):
         """
         Add an edge between this graph's nodes `first` and `second` and definite them as neighbors
         """
 
-        edge = Edge(id, first, second, weight, name)
+        edge = Edge(id, first, second, weight)
         edge._safe = safe
         edge._comfort = comfort
-        first._addEdge(edge)
+        first._addEdge(id)
         first._addNeighbor(second)
-
-        edge = Edge(id, second, first, weight, name)
-        edge._safe = safe
-        edge._comfort = comfort
-        second._addEdge(edge)
+        second._addEdge(id)
         second._addNeighbor(first)
+
+        self._edges[id] = edge
+
+    def between(self, first, second):
+        """
+        Returns the `Edge` which starts from node `first` and ends to `second`
+
+        Returns `None` if this edge does't exist
+        """
+
+        firstNode = self._nodes[first]
+
+        for edge in firstNode.getEdges():
+            if self.neighborFrom(first, edge) == second:
+                return edge
+
+        return None
+
+    def neighborFrom(self, node_id, edge_id):
+        """
+        Returns the `Node`'s id linked to `node_id` by the `Edge` with id `edge_id`
+        """
+
+        edge = self._edges[id]
+
+        if edge.getFirst() == node_id:
+            return edge.getSecond()
+        else:
+            return edge.getFirst()
