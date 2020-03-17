@@ -339,22 +339,30 @@ class Graph:
         Add an edge between this graph's nodes `first` and `second` and definite them as neighbors
         """
 
-        edge = Edge(id, first, second, weight)
+        edge = Edge(id, first.getId(), second.getId(), weight)
         edge._safe = safe
         edge._comfort = comfort
         first._addEdge(id)
-        first._addNeighbor(second)
+        first._addNeighbor(second.getId())
         second._addEdge(id)
-        second._addNeighbor(first)
+        second._addNeighbor(first.getId())
 
         self._edges[id] = edge
 
     def neighborFrom(self, node, edge):
         """
-        Returns the `Node` which is linked to the `Node` with id `node_id` by the `Edge` with id `edge_id`
+        Returns the `Node` which is linked to `node` by the edge `edge`
         """
 
         if edge.getFirst() == node.getId():
             return self._nodes[edge.getSecond()]
         else:
             return self._nodes[edge.getFirst()]
+
+    def edgeBetween(self, first, second):
+        for first_edge_id in first.getEdges():
+            for second_edge_id in second.getEdges():
+                if first_edge_id == second_edge_id:
+                    return self._edges[first_edge_id]
+
+        return None

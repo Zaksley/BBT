@@ -68,7 +68,7 @@ def makeGraph():
                 second = Node(nextNode.id, nextNode.lat, nextNode.lon)
                 graph.add_node(second)
 
-            distance = utils.osmparser.OSMParser.geoDistance(first.lat, first.lon, second.lat, second.lon)
+            distance = utils.osmparser.geoDistance(first.lat, first.lon, second.lat, second.lon)
             graph.add_edge(first, second, weight=distance)
 
     print("Graph parsed")

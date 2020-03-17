@@ -1,6 +1,5 @@
-import overpy, folium, webbrowser, random
-import utils.osmparser
-import math
+import overpy, folium, webbrowser, random, math
+from ..utils.osmparser import queryToGraph
 
 ### OSM part ###
 api = overpy.Overpass()
@@ -36,7 +35,7 @@ print("Map created")
         map.add_child(folium.PolyLine([(nodes[j].lat, nodes[j].lon), (nodes[j+1].lat, nodes[j+1].lon)]))"""
 
 print("Converting to graph...")
-graph = utils.osmparser.OSMParser.queryToGraph(tree)
+graph = queryToGraph(tree)
 print("Graph converted")
 
 nodes = graph.getNodes()

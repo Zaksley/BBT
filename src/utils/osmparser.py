@@ -1,6 +1,6 @@
-import utils.graphes
+from . import graphes
 from math import sqrt, cos, sin, radians, atan2
-from utils.constants import R
+from .constants import R
 
 def geoDistance(lat1, lon1, lat2, lon2):
     """
@@ -38,7 +38,7 @@ def queryToGraph(query):
     uncomfortable = ['unclassified']
     very_uncomfortable = ['track']
 
-    graph = utils.graphes.Graph()
+    graph = graphes.Graph()
 
     current_edge_id = 0
 
