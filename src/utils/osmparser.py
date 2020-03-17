@@ -40,6 +40,8 @@ def queryToGraph(query):
 
     graph = utils.graphes.Graph()
 
+    current_edge_id = 0
+
     for i in range(len(query.ways)):
         tag = query.ways[i].tags["highway"]
         if tag in forbidden:
@@ -73,6 +75,8 @@ def queryToGraph(query):
                 second = graph.addNode(nextNode.id, nextNode.lat, nextNode.lon)
 
             distance = geoDistance(node.lat, node.lon, nextNode.lat, nextNode.lon)
-            graph.addEdge(query.ways[i].id, first, second, distance, safety, comfort)
+            #graph.addEdge(query.ways[i].id, first, second, distance, safety, comfort)
+            graph.addEdge(current_edge_id, first, second, distance, safety, comfort)
+            current_edge_id += 1
 
     return graph
