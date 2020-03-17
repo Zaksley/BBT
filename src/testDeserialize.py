@@ -12,16 +12,19 @@ print("Graph have been deserialized")
 nodes = list(graph.getNodes())
 size = len(nodes)
 
-start = nodes[random.randint(0, size-1)]
-end = nodes[random.randint(0, size-1)]
+i = random.randint(0, size-1)
+j = random.randint(0, size-1)
+
+start = nodes[i]
+end = nodes[j]
 
 map = folium.Map((bxlat, bxlon), zoom_start=13)
 
-map.add_child(folium.Marker(start.getCoordinates(), popup='Start', tooltip='Start'))
-map.add_child(folium.Marker(end.getCoordinates(), popup='End', tooltip='End'))
+map.add_child(folium.Marker(start.getCoordinates(), popup=str(i), tooltip='Start'))
+map.add_child(folium.Marker(end.getCoordinates(), popup=str(j), tooltip='End'))
 
 print("Finding path with A*...")
-path = pathAStar(graph, start, end)
+path = pathAStar(graph, start, end, 2)
 distance = path[len(path)-1].getDistance()
 print(f"Path found\nIt contains {len(path)} nodes\nIts lenght is {distance}m\nDrawing path...")
 
@@ -39,7 +42,7 @@ for i in range(len(path)-1):
 
     #Comfort color
         
-    map.add_child(folium.PolyLine([(coord1[0], coord1[1]), (coord2[0], coord2[1])], color=c))
+    map.add_child(folium.PolyLine([coord1, coord2], color=c))
 
 print("Path have been drawn")
 
