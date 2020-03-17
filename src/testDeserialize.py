@@ -5,6 +5,8 @@ from utils.algorithms import pathAStar
 bxlat = 44.8333
 bxlon = -0.5667
 
+#Save a graph with bbox 44.7973,-0.6580,44.8450,-0.5856
+
 print("Deserializing graph...")
 graph = deserialize("./bigger.pkl")
 print("Graph have been deserialized")
