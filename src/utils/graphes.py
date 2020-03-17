@@ -73,7 +73,7 @@ class Node:
 
     def setPredecessor(self, predecessor):
         """
-        Set the node's predecessor to `predecessor` for Dijkstra algorithm
+        Set the node's predecessor to `predecessor` for A* algorithm
         """
 
         self._predecesor = predecessor
@@ -120,14 +120,14 @@ class Node:
 
     def getNeighbors(self):
         """
-        Returns the `list` of node's neighbors
+        Returns the `list` of node's neighbors' id
         """
 
         return self._neighbors
 
     def getEdges(self):
         """
-        Returns the `list` of node's egdes's id
+        Returns the `list` of node's egdes' id
         """
 
         return self._edges
@@ -155,14 +155,14 @@ class Node:
 
     def _addEdge(self, id):
         """
-        Add the edge `id` to the node's list of edges
+        Add the edge id `id` to the node's list of edges
         """
 
         self._edges.append(id)
 
     def _addNeighbor(self, id):
         """
-        Add the neighbor `id` to the node's list of neighbors
+        Add the node id `id` to the node's list of neighbors
         """
 
         self._neighbors.append(id)
@@ -205,14 +205,14 @@ class Edge:
 
     def getFirst(self):
         """
-        Returns the `Node` where this edge starts
+        Returns the id of the `Node` where this edge starts
         """
 
         return self._first
 
     def getSecond(self):
         """
-        Returns the `Node` where this edge ends
+        Returns the id of `Node` where this edge ends
         """
 
         return self._second
@@ -240,14 +240,14 @@ class Edge:
 
     def mark(self):
         """
-        Mark this edge and its reverse
+        Mark this edge
         """
 
         self._marked = True
 
     def unmark(self):
         """
-        Unmark this edge and its reverse
+        Unmark this edge
         """
 
         self._marked = False
@@ -288,7 +288,7 @@ class Graph:
 
     def getNodes(self):
         """
-        Returns the list of all nodes in this graph
+        Returns an iterator over the node's list of this graph
         """
 
         return self._nodes.values()
@@ -296,6 +296,8 @@ class Graph:
     def getNode(self, id):
         """
         Returns the `Node` of this graph which has for id `id`
+
+        Returns `None` if it doesn't exist
         """
         
         try:
@@ -306,6 +308,8 @@ class Graph:
     def getEdge(self, id):
         """
         Returns the `Edge` of this graph which has for id `id`
+
+        Returns `None` if it doesn't exist
         """
         try:
             return self._edges[id]
@@ -314,7 +318,7 @@ class Graph:
 
     def unmarkAll(self):
         """
-        Unmark all the nodes of the graph
+        Unmark all the nodes adn edges of the graph
         """
 
         for node in self._nodes.values():
@@ -336,7 +340,7 @@ class Graph:
 
     def addEdge(self, id, first, second, weight=1, safe="", comfort=""):
         """
-        Add an edge between this graph's nodes `first` and `second` and definite them as neighbors
+        Add an edge between this graph's nodes `first` and `second`
         """
 
         edge = Edge(id, first.getId(), second.getId(), weight)
