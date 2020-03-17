@@ -21,7 +21,7 @@ def download_save(minlat, minlon, maxlat, maxlon, path):
     print(f"Received: {len(query.nodes)} nodes and {len(query.ways)} ways")
 
     print("Parsing graph")
-    graph = utils.osmparser.OSMParser.queryToGraph(query)
+    graph = utils.osmparser.queryToGraph(query)
     print("Graph have been parsed")
 
     lim = sys.getrecursionlimit()

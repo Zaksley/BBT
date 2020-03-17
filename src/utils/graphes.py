@@ -297,9 +297,18 @@ class Graph:
         """
         Returns the `Node` of this graph which has for id `id`
         """
-
+        
         try:
             return self._nodes[id]
+        except:
+            return None
+
+    def getEdge(self, id):
+        """
+        Returns the `Edge` of this graph which has for id `id`
+        """
+        try:
+            return self._edges[id]
         except:
             return None
 
@@ -340,14 +349,12 @@ class Graph:
 
         self._edges[id] = edge
 
-    def neighborFrom(self, node_id, edge_id):
+    def neighborFrom(self, node, edge):
         """
-        Returns the id of the `Node` which is linked to the `Node` with id `node_id` by the `Edge` with id `edge_id`
+        Returns the `Node` which is linked to the `Node` with id `node_id` by the `Edge` with id `edge_id`
         """
 
-        edge = self._edges[id]
-
-        if edge.getFirst() == node_id:
-            return edge.getSecond()
+        if edge.getFirst() == node.getId():
+            return self._nodes[edge.getSecond()]
         else:
-            return edge.getFirst()
+            return self._nodes[edge.getFirst()]
