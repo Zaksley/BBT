@@ -24,7 +24,7 @@ class Node:
         The node's longitude
     """
 
-    def __init__(self, id, latitude=0, longitude=0, name = ""):
+    def __init__(self, id, latitude=0, longitude=0):
         self._id = id
         self._lat = latitude
         self._lon = longitude
@@ -103,9 +103,6 @@ class Node:
         c = 2*math.atan2(math.sqrt(a), math.sqrt(1-a))
 
         return R * c
-
-        #Euclidian approximation
-        #return math.sqrt((lat2 - lat1)**2 + (lon2 - lon1)**2) * R
 
     def getId(self):
         """
@@ -289,7 +286,6 @@ class Graph:
         self._edges = {}
         self._name = name
 
-    #On retourne les vrais noeuds ?
     def getNodes(self):
         """
         Returns the list of all nodes in this graph
@@ -302,33 +298,34 @@ class Graph:
         Returns the `Node` of this graph which has for id `id`
         """
 
-        for node in self._nodes.keys():
-            if node == id:
-                return node[id]
-        return None
+        try:
+            return self._nodes[id]
+        except:
+            return None
 
-    # A modifier en utilisant le dico
     def unmarkAll(self):
         """
         Unmark all the nodes of the graph
         """
 
-        for s in self._nodes:
-            for e in s.getEdges():
-                e.unmark()
-            s.unmark()
+        for node in self._nodes.values():
+            node.unmark()
 
-    def addNode(self, id, lon=0, lat=0, name=""):
+        for edge in self._edges.values():
+            edge.unmark()
+            
+
+    def addNode(self, id, lon=0, lat=0):
         """
         Add a node to this graph with the specified `id`
         """
 
-        node = Node(id, lon, lat, name)
+        node = Node(id, lon, lat)
         self._nodes[id] = node
          
         return node
 
-    def addEdge(self, id, first, second, weight=1, safe="", comfort="",  name=""):
+    def addEdge(self, id, first, second, weight=1, safe="", comfort=""):
         """
         Add an edge between this graph's nodes `first` and `second` and definite them as neighbors
         """
@@ -343,24 +340,9 @@ class Graph:
 
         self._edges[id] = edge
 
-    def between(self, first, second):
-        """
-        Returns the `Edge` which starts from node `first` and ends to `second`
-
-        Returns `None` if this edge does't exist
-        """
-
-        firstNode = self._nodes[first]
-
-        for edge in firstNode.getEdges():
-            if self.neighborFrom(first, edge) == second:
-                return edge
-
-        return None
-
     def neighborFrom(self, node_id, edge_id):
         """
-        Returns the `Node`'s id linked to `node_id` by the `Edge` with id `edge_id`
+        Returns the id of the `Node` which is linked to the `Node` with id `node_id` by the `Edge` with id `edge_id`
         """
 
         edge = self._edges[id]
