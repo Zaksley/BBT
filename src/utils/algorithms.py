@@ -1,32 +1,31 @@
 from .graphes import *
+from collections import deque
+from bisect import insort_left
 
 def pathAStar(G, start, end, weight=1):
     """
     Returns an array of `Node` which represents a good path from node `start` to node `end` using A* algorithm
     """
 
-    def appendSorted(array, node):
-        if len(array) == 0:
-            array.append(node)
+    """def appendSorted(queue, node):
+        if len(queue) == 0:
+            queue.append(node)
             return
 
-        for i in range(len(array)):
-            if node.getCost() <= array[i].getCost():
-                array.insert(i, node)
+        for i in range(len(queue)):
+            if node.getCost() <= queue[i].getCost():
+                queue.insert(i, node)
                 return
 
-        array.append(node)
+        queue.append(node)"""
 
     start.setDistance(0)
     start.setCost(0)
     current = start
 
-    toBeTreated = [current]
+    toBeTreated = deque([current])
 
     while current != end:
-        current.mark() #Le noeud a une distance definitive
-        toBeTreated.remove(current) #On supprime le noeud choisit de la liste des noeuds a traiter car il a maintenant une distance definitive
-
         #On calcule la distance des voisins et on prend le plus proche auquel on definie sa distance comme definitive (en le marquant et le supprimant de la liste a la prochaine boucle)
         for edge_id in current.getEdges():
 
@@ -45,16 +44,18 @@ def pathAStar(G, start, end, weight=1):
                 neighbor.setPredecessor(current)
             #else: Bah rien
 
-            appendSorted(toBeTreated, neighbor) #On ajoute tous les noeuds a la liste de noeuds a traiter
+            insort_left(toBeTreated, neighbor) #On ajoute tous les noeuds a la liste de noeuds a traiter
 
-        current = toBeTreated[0]
-
+        current = toBeTreated.popleft() #On supprime le noeud choisit de la liste des noeuds a traiter car il a maintenant une distance definitive
+        current.mark() #Le noeud a une distance definitive
+        
     #Compute final path
     path = []
     predecessor = current
 
     while predecessor != None:
-        path.insert(0, predecessor)
+        path.append(predecessor)
         predecessor = predecessor.getPredecessor()
 
+    path.reverse()
     return path

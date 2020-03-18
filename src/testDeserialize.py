@@ -1,24 +1,30 @@
 import os, math, random, folium, webbrowser
 from utils.graphserializer import deserialize
-from utils.algorithms import pathAStar
+from utils.algorithms import *
 
 bxlat = 44.8333
 bxlon = -0.5667
 
-#Save a graph with bbox 44.7973,-0.6580,44.8450,-0.5856
+#Save a graph with bbox 44.7973,-0.6580,44.8450,-0.5856 fo bigger.pkl
+
+#Save a graph with bbox 44.7973,-0.6580,44.8550,-0.5756 for almost bx
+#    interesting nodes: 17333, 20228
 
 print("Deserializing graph...")
-graph = deserialize("./bigger.pkl")
+graph = deserialize("./bx.pkl")
 print("Graph have been deserialized")
 
 nodes = list(graph.getNodes())
 size = len(nodes)
 
 i = random.randint(0, size-1)
-j = random.randint(0, size-1)
+j = random.randint(0, size-1)#16987
 
 start = nodes[i]
 end = nodes[j]
+
+print(f"Start is node {i}")
+print(f"End is node {j}")
 
 map = folium.Map((bxlat, bxlon), zoom_start=13)
 
@@ -26,7 +32,7 @@ map.add_child(folium.Marker(start.getCoordinates(), popup=str(i), tooltip='Start
 map.add_child(folium.Marker(end.getCoordinates(), popup=str(j), tooltip='End'))
 
 print("Finding path with A*...")
-path = pathAStar(graph, start, end, 2)
+path = pathAStar(graph, start, end, 1.10)
 distance = path[len(path)-1].getDistance()
 print(f"Path found\nIt contains {len(path)} nodes\nIts lenght is {distance}m\nDrawing path...")
 

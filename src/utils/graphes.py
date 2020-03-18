@@ -167,6 +167,16 @@ class Node:
 
         self._neighbors.append(id)
 
+    def __eq__(self, other):
+        if other == None: return False
+        else: return self._id == other._id
+
+    def __lt__(self, other):
+        return self._cost < other._cost
+        
+    def __le__(self, other):
+        return self < other or self == other
+
 class Edge:
     """
     Summary
