@@ -1,6 +1,7 @@
 import os, math, random, folium, webbrowser
 from utils.graphserializer import deserialize
 from utils.algorithms import *
+from time import perf_counter
 
 bxlat = 44.8333
 bxlon = -0.5667
@@ -17,8 +18,8 @@ print("Graph have been deserialized")
 nodes = list(graph.getNodes())
 size = len(nodes)
 
-i = random.randint(0, size-1)
-j = random.randint(0, size-1)#16987
+i = 17333#random.randint(0, size-1)
+j = 20228#random.randint(0, size-1)
 
 start = nodes[i]
 end = nodes[j]
@@ -32,9 +33,11 @@ map.add_child(folium.Marker(start.getCoordinates(), popup=str(i), tooltip='Start
 map.add_child(folium.Marker(end.getCoordinates(), popup=str(j), tooltip='End'))
 
 print("Finding path with A*...")
-path = pathAStar(graph, start, end, 1.10)
+t1 = perf_counter()
+path = pathAStar(graph, start, end, 1.05)
+t2 = perf_counter()
 distance = path[len(path)-1].getDistance()
-print(f"Path found\nIt contains {len(path)} nodes\nIts lenght is {distance}m\nDrawing path...")
+print(f"Path found in {t2-t1}s\nIt contains {len(path)} nodes\nIts lenght is {distance}m\nDrawing path...")
 
 for i in range(len(path)-1):
     coord1 = path[i].getCoordinates()

@@ -1,4 +1,5 @@
 from .graphes import *
+from .safety import safetyWeight
 from collections import deque
 from bisect import insort_left
 
@@ -36,7 +37,7 @@ def pathAStar(G, start, end, weight=1):
                 continue
 
             distance = current.getDistance() + edge.getLength()
-            cost = distance + weight * neighbor.distanceTo(end)
+            cost = safetyWeight(edge) * (distance + weight * neighbor.distanceTo(end))
 
             if cost < neighbor.getCost(): #Si la distance etait deja calcule et plus petite alors on la touche pas
                 neighbor.setDistance(distance)
