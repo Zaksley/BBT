@@ -1,6 +1,6 @@
 import os, math, random, folium, webbrowser
 from utils.graphserializer import deserialize
-from utils.algorithms import *
+from utils.algorithms import pathAStar
 from time import perf_counter
 
 bxlat = 44.8333
