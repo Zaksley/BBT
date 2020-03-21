@@ -1,5 +1,5 @@
 from . import graphes
-from math import sqrt, cos, sin, radians, atan2
+from math import sqrt, cos, sin, radians, atan
 from .constants import R
 
 def geoDistance(lat1, lon1, lat2, lon2):
@@ -10,14 +10,13 @@ def geoDistance(lat1, lon1, lat2, lon2):
     #Haversine formula
     phi1 = radians(lat1)
     phi2 = radians(lat2)
-    dphi = phi2 - phi1
-    dl = radians(lat2 - lat1)
+    dl = radians(lon2 - lon1)
 
-    a = sin(dphi/2)**2 + cos(phi1)*cos(phi2)*sin(dl/2)**2
-    c = 2*atan2(sqrt(a), sqrt(1-a))
+    a = sin(phi2 - phi1)**2 + cos(phi1)*cos(phi2)*sin(dl)**2
+    c = 2*atan(sqrt(a) / sqrt(1-a))
 
     return R * c
-
+    
 def queryToGraph(query):
     """
     Convert an Overpy query into a routable graph

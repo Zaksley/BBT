@@ -147,6 +147,8 @@ class BBTWindow(QWidget):
 
         self.statusLabel.setText("Fait.")
 
+        self.graph.unmarkAll()
+
     def findNearestNodes(self, startCoords, endCoords):
         nearStart = None
         nearStartDistance = math.inf
