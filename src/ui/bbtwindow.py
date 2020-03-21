@@ -17,6 +17,8 @@ class BBTWindow(QWidget):
     def __init__(self, mapPath, graphPath):
         QWidget.__init__(self)
 
+        self.initializeUI()
+
         ###     ATRIBUTES   ###
         self.mapPath = mapPath
         self.url = "file://" + self.mapPath
