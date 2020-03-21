@@ -1,7 +1,7 @@
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-import requests, threading
+import requests, threading, decimal
 
 def formatAdress(text):
     adress = text.split(" ")
@@ -64,7 +64,7 @@ class SearchEdit(QLineEdit):
         for adress in adresses:
             item = QStandardItem()
             item.setText(adress["display_name"])
-            item.setData((adress["lat"], adress["lon"]))
+            item.setData((decimal.Decimal(adress["lat"]), decimal.Decimal(adress["lon"])))
             self.model.appendRow(item)
         
     def _launchThread(self):

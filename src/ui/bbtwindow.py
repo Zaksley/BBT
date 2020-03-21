@@ -129,7 +129,7 @@ class BBTWindow(QWidget):
             edge = self.graph.edgeBetween(path[i], path[i+1])
 
             #Safety color
-            c = 'gray'
+            c = 'red'
             if edge.getSafety() == "safe":  c = 'green'
             elif edge.getSafety() == "normal":  c = 'blue'
             elif edge.getSafety() == "unsafe": c = 'orange'
@@ -142,8 +142,8 @@ class BBTWindow(QWidget):
         self.statusLabel.setText("Fait.")
 
         self.statusLabel.setText("Sauvegarde de la carte...")
-        self.map.save(path)
-        self.webview.setUrl(self.url)
+        self.map.save(self.mapPath)
+        self.webview.setUrl(QUrl(self.url))
 
         self.statusLabel.setText("Fait.")
 
@@ -160,7 +160,17 @@ class BBTWindow(QWidget):
 
             if fromStart < nearStartDistance:
                 nearStart = node
+                nearStartDistance = fromStart
             if fromEnd < nearEndDistance:
                 nearEnd = node
+                nearEndDistance = fromEnd
+
+        print(f"Départ : {startCoords}")
+        print(f"Plus proche départ : {nearStart.getCoordinates()}")
+        print(nearStartDistance)
+
+        print(f"Arrivée : {endCoords}")
+        print(f"Plus proche arrivée : {nearEnd.getCoordinates()}")
+        print(nearEndDistance)
 
         return (nearStart, nearEnd)
