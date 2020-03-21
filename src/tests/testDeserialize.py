@@ -1,4 +1,7 @@
-import os, math, random, folium, webbrowser
+import os, sys
+sys.path.append(os.path.abspath("src/"))
+
+import math, random, folium, webbrowser
 from utils.graphserializer import deserialize
 from utils.algorithms import pathAStar
 from time import perf_counter

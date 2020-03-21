@@ -1,3 +1,6 @@
+import os, sys
+sys.path.append(os.path.abspath("src/"))
+
 import overpy, folium, webbrowser, random
 import utils.osmparser
 import math
@@ -34,11 +37,6 @@ def SelectNode(point_info) :
     #adding a marker at the start
     
     return (lat, lon)
-
-    """
-    Return the nearest node
-    """
-    #return nearNode(graph, latfocus, lonfocus)
 
 def nearNode(graph, latitude_focus, longitude_focus) :
     norme = math.inf

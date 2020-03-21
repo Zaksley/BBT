@@ -1,5 +1,9 @@
+import os, sys
+sys.path.append(os.path.abspath("src/"))
+
 import overpy, folium, webbrowser, random, math
-from ..utils.osmparser import queryToGraph
+from utils.osmparser import queryToGraph
+from utils.algorithms import pathAStar
 
 ### OSM part ###
 api = overpy.Overpass()
@@ -48,7 +52,7 @@ map.add_child(folium.Marker(start.getCoordinates(), popup='Start', tooltip='Star
 map.add_child(folium.Marker(end.getCoordinates(), popup='End', tooltip='End'))
 
 print("Finding path with A*...")
-path = graph.pathAStar(start, end)
+path = pathAStar(graph, start, end)
 distance = path[len(path)-1].getDistance()
 print(f"Path found\nIt contains {len(path)} nodes\nIts lenght is {distance}m\nDrawing path...")
 
@@ -61,7 +65,7 @@ for i in range(len(path)-1):
 map.save('./map.html')
 webbrowser.open_new_tab('./map.html')
 
-print("Reset graph")
+"""print("Reset graph")
 graph.unmarkAll()
 for node in nodes:
     node.setDistance(math.inf)
@@ -82,4 +86,4 @@ print("Paths have been drawn")
 print("Start saving map...")
 map.save('./map.html')
 print("Map saved")
-webbrowser.open_new_tab('./map.html')
+webbrowser.open_new_tab('./map.html')"""

@@ -1,3 +1,6 @@
+import os, sys
+sys.path.append(os.path.abspath("src/"))
+
 import overpy, folium, webbrowser, random
 import utils.osmparser
 import networkx

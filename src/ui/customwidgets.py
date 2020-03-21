@@ -28,7 +28,7 @@ class SearchEdit(QLineEdit):
         self.showMessageBox.connect(self.onShowMessageBox)
         
     def onShowMessageBox(self, text):
-        QMessageBox.critical(self, "Error", text, QMessageBox.Ok)
+        QMessageBox.critical(self, "Erreur", text, QMessageBox.Ok)
     
     def textChanged(self, text):
         self.selectedItem = None

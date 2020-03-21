@@ -38,6 +38,12 @@ def download_save(minlat, minlon, maxlat, maxlon, path):
     #sys.setrecursionlimit(lim)    
 
 def deserialize(path):
+    """
+    Unpickle the graph situated at `path`
+    Returns a `Graph` if no error occurs
+    Returns `None` else
+    """
+
     try:
         f = open(path, "rb")
         graph = pickle.load(f)
