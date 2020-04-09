@@ -90,18 +90,14 @@ class Node:
         Returns the distance from this node to `node` compared to their coordinates
         """
 
-        lat1 = self._lat
-        lat2 = node._lat
-
         #Haversine formula
-        phi1 = math.radians(lat1)
-        phi2 = math.radians(lat2)
-        dphi = phi2 - phi1
-        dl = math.radians(lat2 - lat1)
+        phi1 = math.radians(self._lat)
+        phi2 = math.radians(node._lat)
+        dl = math.radians(node._lon - self._lon)
 
-        a = math.sin(dphi/2)**2 + math.cos(phi1)*math.cos(phi2)*math.sin(dl/2)**2
+        a = math.sin((phi2 - phi1)/2)**2 + math.cos(phi1)*math.cos(phi2)*math.sin(dl/2)**2
         c = 2*math.atan2(math.sqrt(a), math.sqrt(1-a))
-
+        
         return R * c
 
     def getId(self):

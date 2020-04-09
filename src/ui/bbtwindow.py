@@ -167,12 +167,4 @@ class BBTWindow(QWidget):
                 nearEnd = node
                 nearEndDistance = fromEnd
 
-        print(f"Départ : {startCoords}")
-        print(f"Plus proche départ : {nearStart.getCoordinates()}")
-        print(nearStartDistance)
-
-        print(f"Arrivée : {endCoords}")
-        print(f"Plus proche arrivée : {nearEnd.getCoordinates()}")
-        print(nearEndDistance)
-
         return (nearStart, nearEnd)

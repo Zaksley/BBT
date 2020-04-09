@@ -1,5 +1,5 @@
 from . import graphes
-from math import sqrt, cos, sin, radians, atan
+from math import sqrt, cos, sin, radians, atan2
 from .constants import R
 
 def geoDistance(lat1, lon1, lat2, lon2):
@@ -12,9 +12,9 @@ def geoDistance(lat1, lon1, lat2, lon2):
     phi2 = radians(lat2)
     dl = radians(lon2 - lon1)
 
-    a = sin(phi2 - phi1)**2 + cos(phi1)*cos(phi2)*sin(dl)**2
-    c = 2*atan(sqrt(a) / sqrt(1-a))
-
+    a = sin((phi2 - phi1)/2)**2 + cos(phi1)*cos(phi2)*sin(dl/2)**2
+    c = 2*atan2(sqrt(a), sqrt(1-a))
+    
     return R * c
     
 def queryToGraph(query):
