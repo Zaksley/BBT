@@ -10,12 +10,14 @@ def formatAdress(text):
 
 class SearchEdit(QLineEdit):
     showMessageBox = pyqtSignal(str)
+    autoComplete = pyqtSignal(list)
 
     def __init__(self, parent=None):
         super(SearchEdit, self).__init__(parent)
 
         self.currentThread = None
         self.model = QStandardItemModel()
+        self.model.appendRow(QStandardItem(""))
         self.selectedItem = None
 
         completer = QCompleter()
@@ -26,10 +28,23 @@ class SearchEdit(QLineEdit):
         self.setCompleter(completer)
 
         self.showMessageBox.connect(self.onShowMessageBox)
+        self.autoComplete.connect(self.onAutoComplete)
         
     def onShowMessageBox(self, text):
         QMessageBox.critical(self, "Erreur", text, QMessageBox.Ok)
     
+    def onAutoComplete(self, adresses):
+        if len(adresses) == 0:
+            return
+        
+        self.model.clear()
+
+        for adress in adresses:
+            item = QStandardItem()
+            item.setText(adress["display_name"])
+            item.setData((decimal.Decimal(adress["lat"]), decimal.Decimal(adress["lon"])))
+            self.model.appendRow(item)
+
     def textChanged(self, text):
         self.selectedItem = None
         super(SearchEdit, self).textChanged(text)
@@ -43,17 +58,15 @@ class SearchEdit(QLineEdit):
         else: raise Exception("No adress selected")
 
     def event(self, event):
-        if event.type() == QEvent.KeyPress and event.key() == Qt.Key_Tab:
+        if event.type() == QEvent.KeyPress and event.key() != Qt.Key_Backspace:
             self._launchThread()
-            return True
+            #return True
 
         return super(SearchEdit, self).event(event)
     
     def _updateAdresses(self):
         if self.text() == "":
             return
-
-        self.model.clear()
 
         try:
             adresses = requests.get('https://nominatim.openstreetmap.org/search?q=' + formatAdress(self.text()) +'&format=json&countrycodes=fr',
@@ -63,11 +76,7 @@ class SearchEdit(QLineEdit):
             self.showMessageBox.emit(str(err))
             return
 
-        for adress in adresses:
-            item = QStandardItem()
-            item.setText(adress["display_name"])
-            item.setData((decimal.Decimal(adress["lat"]), decimal.Decimal(adress["lon"])))
-            self.model.appendRow(item)
+        self.autoComplete.emit(adresses)
         
     def _launchThread(self):
         if self.currentThread == None or not self.currentThread.is_alive():

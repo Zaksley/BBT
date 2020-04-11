@@ -42,7 +42,6 @@ class BBTWindow(QWidget):
         self.graph = None
         self.threadpool = QThreadPool(self)
         self.threadpool.setMaxThreadCount(1)
-        self.threadpool.releaseThread()
 
         self.reloadWebview.connect(self.onReloadWebview)
         self.showMessageBox.connect(self.onShowMessageBox)
@@ -162,7 +161,11 @@ class BBTWindow(QWidget):
         self.threadpool.start(Worker(self._goFunc))
 
     def stop(self):
+        if self.threadpool.activeThreadCount() == 0:
+            return
+
         self.statusLabel.setText("Arrêt du thread...")
+        self.threadpool.reserveThread()
         self.threadpool.releaseThread()
         self.statusLabel.setText("Démarquage du graphe...")
         self.graph.unmarkAll()
@@ -187,20 +190,17 @@ class BBTWindow(QWidget):
         (start, end) = self.findNearestNodes(startCoords, endCoords)
         path = pathAStar(self.graph, start, end, 1.05)
 
-        totalEdges = 0
-        safeEdges = 0
+        safeDistance = 0
         for i in range(len(path)-1):
             coord1 = path[i].getCoordinates()
             coord2 = path[i+1].getCoordinates()
             edge = self.graph.edgeBetween(path[i], path[i+1])
-            
-            totalEdges += 1
 
             #Safety color
             c = 'gray'
             if edge.getSafety() == "safe":
                 c = 'green'
-                safeEdges += 1
+                safeDistance += edge.getLength()
             elif edge.getSafety() == "normal": c = 'blue'
             elif edge.getSafety() == "unsafe": c = 'orange'
             elif edge.getSafety() == "very_unsafe": c = 'red'
@@ -209,8 +209,9 @@ class BBTWindow(QWidget):
         
             self.map.add_child(folium.PolyLine([coord1, coord2], color=c))
 
-        self.distanceLabel.setText(f"<strong>Distance:</strong> {round(path[len(path)-1].getDistance())}m")
-        self.percentLabel.setText(f"<strong>Pistes cyclables ou chemins:</strong> {round(safeEdges/totalEdges * 100)}%")
+        length = path[len(path)-1].getDistance()
+        self.distanceLabel.setText(f"<strong>Distance:</strong> {round(length)}m")
+        self.percentLabel.setText(f"<strong>Pistes cyclables ou chemins:</strong> {round(safeDistance/length * 100)}%")
 
         self.statusLabel.setText("Fait.")
 
