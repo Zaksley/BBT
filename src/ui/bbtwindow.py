@@ -108,6 +108,22 @@ class BBTWindow(QWidget):
         self.mainLayout.addWidget(self.webview)
         self.mainLayout.addWidget(self.statusLabel)
 
+        #RIGHT PART
+        self.rightLayout = QVBoxLayout()
+
+        #INFO PART
+        self.infoBox = QGroupBox("Informations", self)
+        self.infoBox.setMaximumWidth(300)
+        self.infoLayout = QVBoxLayout()
+
+        self.distanceLabel = QLabel("<strong>Distance</strong>: ", self)
+        self.percentLabel = QLabel("<strong>Pistes cyclables ou chemins:</strong> ", self)
+
+        self.infoLayout.addWidget(self.distanceLabel)
+        self.infoLayout.addWidget(self.percentLabel)
+
+        self.infoBox.setLayout(self.infoLayout)
+
         #PARAMS PART
         self.paramsBox = QGroupBox("Paramètres", self)
         self.paramsBox.setMaximumWidth(300)
@@ -121,8 +137,11 @@ class BBTWindow(QWidget):
         self.paramsLayout.addStretch(1)
         self.paramsBox.setLayout(self.paramsLayout)
 
+        self.rightLayout.addWidget(self.infoBox)
+        self.rightLayout.addWidget(self.paramsBox)
+
         self.globalLayout.addLayout(self.mainLayout)
-        self.globalLayout.addWidget(self.paramsBox)
+        self.globalLayout.addLayout(self.rightLayout)
         self.setLayout(self.globalLayout)
 
         self.show()
@@ -168,21 +187,30 @@ class BBTWindow(QWidget):
         (start, end) = self.findNearestNodes(startCoords, endCoords)
         path = pathAStar(self.graph, start, end, 1.05)
 
+        totalEdges = 0
+        safeEdges = 0
         for i in range(len(path)-1):
             coord1 = path[i].getCoordinates()
             coord2 = path[i+1].getCoordinates()
             edge = self.graph.edgeBetween(path[i], path[i+1])
+            
+            totalEdges += 1
 
             #Safety color
-            c = 'red'
-            if edge.getSafety() == "safe":  c = 'green'
-            elif edge.getSafety() == "normal":  c = 'blue'
+            c = 'gray'
+            if edge.getSafety() == "safe":
+                c = 'green'
+                safeEdges += 1
+            elif edge.getSafety() == "normal": c = 'blue'
             elif edge.getSafety() == "unsafe": c = 'orange'
-            elif edge.getSafety() == "very_unsafe": c = 'black'
+            elif edge.getSafety() == "very_unsafe": c = 'red'
 
             #Comfort color
         
             self.map.add_child(folium.PolyLine([coord1, coord2], color=c))
+
+        self.distanceLabel.setText(f"<strong>Distance:</strong> {round(path[len(path)-1].getDistance())}m")
+        self.percentLabel.setText(f"<strong>Pistes cyclables ou chemins:</strong> {round(safeEdges/totalEdges * 100)}%")
 
         self.statusLabel.setText("Fait.")
 
