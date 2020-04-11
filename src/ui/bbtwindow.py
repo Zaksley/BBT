@@ -8,12 +8,29 @@ from .customwidgets import SearchEdit, SafetySlider
 from utils.algorithms import pathAStar
 from utils.osmparser import geoDistance
 from utils.graphserializer import deserialize
-import folium, math
+import folium, math, threading
 
 bxlat = 44.8333
 bxlon = -0.5667
 
+class Worker(QRunnable):
+    def __init__(self, fn, *args, **kwargs):
+        super(Worker, self).__init__()
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+
+    @pyqtSlot()
+    def run(self):
+        '''
+        Initialise the runner function with passed args, kwargs.
+        '''
+        self.fn(*self.args, **self.kwargs)
+
 class BBTWindow(QWidget):
+    reloadWebview = pyqtSignal()
+    showMessageBox = pyqtSignal(str)
+
     def __init__(self, mapPath, graphPath):
         QWidget.__init__(self)
 
@@ -23,6 +40,12 @@ class BBTWindow(QWidget):
         self.mapPath = mapPath
         self.url = "file://" + self.mapPath
         self.graph = None
+        self.threadpool = QThreadPool(self)
+        self.threadpool.setMaxThreadCount(1)
+        self.threadpool.releaseThread()
+
+        self.reloadWebview.connect(self.onReloadWebview)
+        self.showMessageBox.connect(self.onShowMessageBox)
 
         ###     MAP PART     ###
         self.statusLabel.setText("Sauvegarde de la carte...")
@@ -69,6 +92,9 @@ class BBTWindow(QWidget):
         self.goBtn = QPushButton("Aller !", self)
         self.goBtn.clicked.connect(self.go)
 
+        self.stopBtn = QPushButton("Stop", self)
+        self.stopBtn.clicked.connect(self.stop)
+
         self.webview = QWebEngineView(self)
         self.webview.urlChanged.connect(lambda url: self.webview.setUrl(QUrl(url)) if url != self.url else None) 
             
@@ -78,6 +104,7 @@ class BBTWindow(QWidget):
         self.mainLayout.addLayout(self.firstLayout)
         self.mainLayout.addLayout(self.secondLayout)
         self.mainLayout.addWidget(self.goBtn)
+        self.mainLayout.addWidget(self.stopBtn)
         self.mainLayout.addWidget(self.webview)
         self.mainLayout.addWidget(self.statusLabel)
 
@@ -100,17 +127,35 @@ class BBTWindow(QWidget):
 
         self.show()
 
+    def onReloadWebview(self):
+        self.webview.setUrl(QUrl(self.url))
+
+    def onShowMessageBox(self, message):
+        QMessageBox.information(self, "Information", message, QMessageBox.Ok)
+
     def go(self):
         if self.graph == None:
             return
+        
+        if self.threadpool.activeThreadCount() >= 1:
+            return
+        
+        self.threadpool.start(Worker(self._goFunc))
 
+    def stop(self):
+        self.statusLabel.setText("Arrêt du thread...")
+        self.threadpool.releaseThread()
+        self.statusLabel.setText("Démarquage du graphe...")
+        self.graph.unmarkAll()
+        self.statusLabel.setText("Fait.")
+
+    def _goFunc(self):
         self.statusLabel.setText("Placement des points...")
         try:
             startCoords = self.startAdress.getCoords()
             endCoords = self.endAdress.getCoords()
         except:
-            QMessageBox.information(self, "Adresses", """Vous devez remplir les deux champs avec des adresses réelles\n
-            Tip: Appuyez sur Tab pour l'auto-completion""", QMessageBox.Ok)
+            self.showMessageBox.emit("Vous devez remplir les deux champs avec des adresses réelles\nTip: Appuyez sur Tab pour l'auto-completion")
             self.statusLabel.setText("Fait.")
             return
 
@@ -143,7 +188,7 @@ class BBTWindow(QWidget):
 
         self.statusLabel.setText("Sauvegarde de la carte...")
         self.map.save(self.mapPath)
-        self.webview.setUrl(QUrl(self.url))
+        self.reloadWebview.emit()#self.webview.setUrl(QUrl(self.url))
 
         self.statusLabel.setText("Fait.")
 

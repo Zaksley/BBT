@@ -1,4 +1,3 @@
-from .graphes import *
 from .safety import safetyWeight
 from collections import deque
 from bisect import insort_left
