@@ -329,6 +329,9 @@ class Graph:
 
         for node in self._nodes.values():
             node.unmark()
+            node.setPredecessor(None)
+            node.setDistance(math.inf)
+            node.setCost(math.inf)
 
         for edge in self._edges.values():
             edge.unmark()

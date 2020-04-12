@@ -38,7 +38,9 @@ class BBTWindow(QWidget):
 
         ###     ATRIBUTES   ###
         self.mapPath = mapPath
-        self.url = "file://" + self.mapPath
+        if os.name == "nt": self.url = "file:///" 
+        else: self.url = "file://"
+        self.url += self.mapPath
         self.graph = None
         self.threadpool = QThreadPool(self)
         self.threadpool.setMaxThreadCount(1)
@@ -217,14 +219,10 @@ class BBTWindow(QWidget):
 
         self.statusLabel.setText("Sauvegarde de la carte...")
         self.map.save(self.mapPath)
-        self.reloadWebview.emit()#self.webview.setUrl(QUrl(self.url))
+        self.reloadWebview.emit()
 
         self.statusLabel.setText("Démarquage du graphe...")
         self.graph.unmarkAll()
-        for node in self.graph.getNodes():
-            node.setPredecessor(None)
-            node.setDistance(math.inf)
-            node.setCost(math.inf)
         self.statusLabel.setText("Fait.")
 
     def findNearestNodes(self, startCoords, endCoords):

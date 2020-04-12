@@ -62,7 +62,6 @@ class SearchEdit(QLineEdit):
     def event(self, event):
         if event.type() == QEvent.KeyPress and event.key() != Qt.Key_Backspace:
             self._launchThread()
-            #return True
 
         return super(SearchEdit, self).event(event)
     
