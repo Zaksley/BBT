@@ -177,7 +177,7 @@ class BBTWindow(QWidget):
             startCoords = self.startAdress.getCoords()
             endCoords = self.endAdress.getCoords()
         except:
-            self.showMessageBox.emit("Vous devez remplir les deux champs avec des adresses réelles\nTip: Appuyez sur Tab pour l'auto-completion")
+            self.showMessageBox.emit("Vous devez remplir les deux champs avec des adresses réelles\nTip: Appuyez sur Entrer pour la sélectionner")
             self.statusLabel.setText("Fait.")
             return
 
@@ -211,7 +211,7 @@ class BBTWindow(QWidget):
 
         length = path[len(path)-1].getDistance()
         self.distanceLabel.setText(f"<strong>Distance:</strong> {round(length)}m")
-        self.percentLabel.setText(f"<strong>Pistes cyclables ou chemins:</strong> {round(safeDistance/length * 100)}%")
+        if length != 0: self.percentLabel.setText(f"<strong>Pistes cyclables ou chemins:</strong> {round(safeDistance/length * 100)}%")
 
         self.statusLabel.setText("Fait.")
 
@@ -219,9 +219,13 @@ class BBTWindow(QWidget):
         self.map.save(self.mapPath)
         self.reloadWebview.emit()#self.webview.setUrl(QUrl(self.url))
 
-        self.statusLabel.setText("Fait.")
-
+        self.statusLabel.setText("Démarquage du graphe...")
         self.graph.unmarkAll()
+        for node in self.graph.getNodes():
+            node.setPredecessor(None)
+            node.setDistance(math.inf)
+            node.setCost(math.inf)
+        self.statusLabel.setText("Fait.")
 
     def findNearestNodes(self, startCoords, endCoords):
         nearStart = None

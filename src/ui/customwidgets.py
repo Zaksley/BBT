@@ -45,16 +45,18 @@ class SearchEdit(QLineEdit):
             item.setData((decimal.Decimal(adress["lat"]), decimal.Decimal(adress["lon"])))
             self.model.appendRow(item)
 
+    #Bug: never called
     def textChanged(self, text):
         self.selectedItem = None
         super(SearchEdit, self).textChanged(text)
 
     def onSelectedItem(self, modelIndex):
-        self.selectedItem = modelIndex.row()
-    
+        index = modelIndex.row()
+        self.selectedItem = self.model.takeItem(index).data()
+
     def getCoords(self):
         if self.selectedItem != None:
-            return self.model.takeItem(self.selectedItem).data()
+            return self.selectedItem
         else: raise Exception("No adress selected")
 
     def event(self, event):
