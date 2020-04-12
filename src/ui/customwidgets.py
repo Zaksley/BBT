@@ -72,7 +72,7 @@ class SearchEdit(QLineEdit):
         try:
             adresses = requests.get('https://nominatim.openstreetmap.org/search?q=' + formatAdress(self.text()) +'&format=json&countrycodes=fr',
                 headers={"User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0"},
-                timeout=1.0).json()
+                timeout=2.0).json()
         except Exception as err:
             self.showMessageBox.emit(str(err))
             return
