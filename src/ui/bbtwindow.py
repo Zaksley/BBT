@@ -133,9 +133,19 @@ class BBTWindow(QWidget):
         self.pathCheck = QCheckBox("Eviter les chemins", self)
         self.safetySlide = SafetySlider(self)
 
+        self.weightLayout = QHBoxLayout()
+        self.weightBox = QDoubleSpinBox(self)
+        self.weightBox.setMinimum(0)
+        self.weightBox.setValue(1.05)
+        self.weightBox.setMinimumWidth(240)
+        self.weightLayout.addWidget(QLabel("Poids :", self))
+        self.weightLayout.addWidget(self.weightBox)
+
         self.paramsLayout.addWidget(self.safetySlide)
         self.paramsLayout.addWidget(self.pathCheck)
         self.paramsLayout.addStretch(1)
+        self.paramsLayout.addWidget(QLabel("Avancé", self))
+        self.paramsLayout.addLayout(self.weightLayout)
         self.paramsBox.setLayout(self.paramsLayout)
 
         self.rightLayout.addWidget(self.infoBox)
@@ -190,7 +200,7 @@ class BBTWindow(QWidget):
         self.statusLabel.setText("En cours de traitement du chemin optimal...")
 
         (start, end) = self.findNearestNodes(startCoords, endCoords)
-        path = pathAStar(self.graph, start, end, 1.05)
+        path = pathAStar(self.graph, start, end, self.weightBox.value())
 
         safeDistance = 0
         for i in range(len(path)-1):
