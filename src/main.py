@@ -2,7 +2,7 @@ import os
 from ui.bbtwindow import BBTWindow
 from PyQt5.QtWidgets import QApplication
 
-GRAPH_NAME = "realbx.pkl"
+GRAPH_NAME = "graph.pkl"
 
 cd = os.path.abspath("./")
 mapPath = ""
@@ -19,3 +19,5 @@ else: #LINUX/MACOS/OTHERS
 app = QApplication([])
 window = BBTWindow(mapPath, graphPath)
 app.exec_()
+
+os.remove(mapPath)
