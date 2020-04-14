@@ -1,8 +1,7 @@
-from .safety import safetyWeight
 from collections import deque
 from bisect import insort_left
 
-def pathAStar(G, start, end, weight=1):
+def pathAStar(G, start, end, weight=1, safety_func=lambda edge: 1):
     """
     Returns an array of `Node` which represents a good path from node `start` to node `end` using A* algorithm
     """
@@ -36,7 +35,7 @@ def pathAStar(G, start, end, weight=1):
                 continue
 
             distance = current.getDistance() + edge.getLength()
-            cost = safetyWeight(edge) * (distance + weight * neighbor.distanceTo(end))
+            cost = safety_func(edge) * (distance + weight * neighbor.distanceTo(end))
 
             if cost < neighbor.getCost(): #Si la distance etait deja calcule et plus petite alors on la touche pas
                 neighbor.setDistance(distance)

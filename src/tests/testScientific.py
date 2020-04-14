@@ -1,13 +1,10 @@
 import os, sys
 sys.path.append(os.path.abspath("src/"))
 
-import math, random, folium, webbrowser
+from random import randint
 from utils.graphserializer import deserialize
 from utils.algorithms import pathAStar
 from time import perf_counter
-
-bxlat = 44.8333
-bxlon = -0.5667
 
 #Save a graph with bbox 44.8073,-0.6280,44.8350,-0.5956 for test.pkl
 
@@ -18,59 +15,71 @@ print("Graph have been deserialized")
 nodes = list(graph.getNodes())
 size = len(nodes)
 
-i = 477#random.randint(0, size-1)
-j = 6506#random.randint(0, size-1)
+exp_count = 100
 
-start = nodes[i]
-end = nodes[j]
+delta_time = 0
+delta_distance = 0 # in %
+exec_time = 0
+distance = 0
 
-print(f"Start node index {i}")
-print(f"End node index {j}")
+n = 0
+while n < exp_count:
+    i = randint(0, size-1)
+    j = randint(0, size-1)
 
-map = folium.Map((bxlat, bxlon), zoom_start=13)
+    if i == j: continue
 
-map.add_child(folium.Marker(start.getCoordinates(), popup=str(i), tooltip='Start'))
-map.add_child(folium.Marker(end.getCoordinates(), popup=str(j), tooltip='End'))
+    print("Clearing graph...")
+    graph.unmarkAll()
+    print("Graph cleared")
 
-###    A*    ###
-print("Finding path with A*...")
-t1 = perf_counter()
-path = pathAStar(graph, start, end, 1)
-t2 = perf_counter()
-distance = path[len(path)-1].getDistance()
-print(f"Path found in {t2-t1}s\nIt contains {len(path)} nodes\nIts lenght is {distance}m\nDrawing path...")
+    start = nodes[i]
+    end = nodes[j]
 
-for i in range(len(path)-1):
-    coord1 = path[i].getCoordinates()
-    coord2 = path[i+1].getCoordinates()
-    edge = graph.edgeBetween(path[i], path[i+1])
-        
-    map.add_child(folium.PolyLine([coord1, coord2], color='red'))
+    print(f"Start node index is {i}")
+    print(f"End node index is {j}\n")
 
-print("Path have been drawn")
+    ###    A*    ###
+    print("Finding path with A*...")
+    t1 = perf_counter()
+    try:
+        path = pathAStar(graph, start, end, 1)
+    except:
+        print("No path, skipping...")
+        continue
+    t2 = perf_counter()
+    a_time = t2 - t1
+    a_distance = path[len(path)-1].getDistance()
+    print(f"Path found in {a_time}s, its lenght is {a_distance}m\n")
 
-print("Clearing graph...")
-graph.unmarkAll()
-print("Graph cleared")
+    print("Clearing graph...")
+    graph.unmarkAll()
+    print("Graph cleared")
 
-###    DIJKSTRA    ###
-print("Finding path with Dijkstra...")
-t1 = perf_counter()
-path = pathAStar(graph, start, end, 0)
-t2 = perf_counter()
-distance = path[len(path)-1].getDistance()
-print(f"Path found in {t2-t1}s\nIt contains {len(path)} nodes\nIts lenght is {distance}m\nDrawing path...")
+    ###    DIJKSTRA    ###
+    print("Finding path with Dijkstra...")
+    t1 = perf_counter()
+    path = pathAStar(graph, start, end, 0)
+    t2 = perf_counter()
+    d_time = t2 - t1
+    d_distance = path[len(path)-1].getDistance()
+    print(f"Path found in {d_time}s, its lenght is {d_distance}m\n")
 
-for i in range(len(path)-1):
-    coord1 = path[i].getCoordinates()
-    coord2 = path[i+1].getCoordinates()
-    edge = graph.edgeBetween(path[i], path[i+1])
-        
-    map.add_child(folium.PolyLine([coord1, coord2], color='blue'))
+    delta_time += d_time - a_time
+    delta_distance += ((a_distance - d_distance) / d_distance) * 100
+    exec_time += (a_time + d_time) / 2
+    distance += d_distance
 
-print("Path have been drawn")
+    n += 1
 
-print("Start saving map...")
-map.save('./map.html')
-print("Map saved")
-webbrowser.open_new_tab('file://' + os.path.abspath('./map.html'))
+avg_delta_time = delta_time / exp_count
+avg_delta_distance = delta_distance / exp_count
+avg_exec_time = exec_time / exp_count
+avg_distance = distance / exp_count
+
+print("\n----------------------------------\n")
+print(f"Experience has been made {exp_count} times")
+print(f"A* is {avg_delta_time}s faster on average than Dijkstra")
+print(f"Average time of computation is {avg_exec_time}s")
+print(f"Dijkstra is {avg_delta_distance}% shorter than A*")
+print(f"Average path distance is {avg_distance}m")
