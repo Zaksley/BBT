@@ -21,11 +21,11 @@ def download_save(minlat, minlon, maxlat, maxlon, path):
     print(f"Received: {len(query.nodes)} nodes and {len(query.ways)} ways")
 
     print("Parsing graph")
-    graph = utils.osmparser.OSMParser.queryToGraph(query)
+    graph = utils.osmparser.queryToGraph(query)
     print("Graph have been parsed")
 
-    lim = sys.getrecursionlimit()
-    sys.setrecursionlimit(1000000)
+    #lim = sys.getrecursionlimit()
+    #sys.setrecursionlimit(1000000)
 
     try:
         f = open(path, "wb")
@@ -35,9 +35,15 @@ def download_save(minlat, minlon, maxlat, maxlon, path):
     except Exception as err:
         print(err)
 
-    sys.setrecursionlimit(lim)    
+    #sys.setrecursionlimit(lim)    
 
 def deserialize(path):
+    """
+    Unpickle the graph situated at `path`
+    Returns a `Graph` if no error occurs
+    Returns `None` else
+    """
+
     try:
         f = open(path, "rb")
         graph = pickle.load(f)

@@ -1,3 +1,6 @@
+import os, sys
+sys.path.append(os.path.abspath("src/"))
+
 import overpy, folium, webbrowser, random
 import utils.osmparser
 import math
@@ -35,20 +38,15 @@ def SelectNode(point_info) :
     
     return (lat, lon)
 
-    """
-    Return the nearest node
-    """
-    #return nearNode(graph, latfocus, lonfocus)
-
 def nearNode(graph, latitude_focus, longitude_focus) :
     norme = math.inf
     nodesList = graph.getNodes()
     nodeMin = nodesList[0]
     for n in nodesList :
         (lat, lon) = n.getCoordinates()
-        if  utils.osmparser.OSMParser.geoDistance(lat,lon,latitude_focus, longitude_focus) < norme :
+        if  utils.osmparser.geoDistance(lat,lon,latitude_focus, longitude_focus) < norme :
             nodeMin = n
-            norme = utils.osmparser.OSMParser.geoDistance(lat,lon,latitude_focus, longitude_focus)
+            norme = utils.osmparser.geoDistance(lat,lon,latitude_focus, longitude_focus)
 
     (lat, lon) = nodeMin.getCoordinates()
     return nodeMin
@@ -96,7 +94,7 @@ for i in range(len(tree.ways)):
 
 
 print("Converting to graph...")
-graph = utils.osmparser.OSMParser.queryToGraph(tree)
+graph = utils.osmparser.queryToGraph(tree)
 print("Graph converted")
 
 nodes = graph.getNodes()
