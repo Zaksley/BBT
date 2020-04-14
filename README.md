@@ -12,6 +12,21 @@ A safe routing application for bikes in Bordeaux using OpenStreet Map
 - Use custom version of the weighted A* algorithm for safety
 - Adjust safety and speed settings
 
+## Dependencies
+
+You will need :
+
+- folium
+- overpy
+- PyQt5
+- PyQt5-sip (if not in PyQt5)
+- PyQtWebEngine
+
+Simply run
+```
+$ pip3 install folium overpy etc...
+```
+
 ## Usage
 
 #### 1 - Clone this repos
