@@ -7,3 +7,8 @@ def safetyWeight(edge):
     elif edge.getSafety() == "very_unsafe": weight = 2
 
     return weight
+
+def safetyUserWeight(edge, user):
+    weight = safetyWeight(edge)
+
+    return weight + user * (1 - weight)

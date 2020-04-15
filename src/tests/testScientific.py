@@ -43,7 +43,7 @@ while n < exp_count:
     print("Finding path with A*...")
     t1 = perf_counter()
     try:
-        path = pathAStar(graph, start, end, 1)
+        path = pathAStar(graph, start, end)
     except:
         print("No path, skipping...")
         continue

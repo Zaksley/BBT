@@ -6,7 +6,7 @@ from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtCore import *
 from .customwidgets import SearchEdit, SafetySlider
 from utils.algorithms import pathAStar
-from utils.safety import safetyWeight
+from utils.safety import safetyUserWeight
 from utils.osmparser import geoDistance
 from utils.graphserializer import deserialize
 import folium, math, threading
@@ -201,7 +201,7 @@ class BBTWindow(QWidget):
         self.statusLabel.setText("En cours de traitement du chemin optimal...")
 
         (start, end) = self.findNearestNodes(startCoords, endCoords)
-        path = pathAStar(self.graph, start, end, self.weightBox.value(), safetyWeight)
+        path = pathAStar(self.graph, start, end, self.weightBox.value(), lambda edge: safetyUserWeight(edge, self.safetySlide.getValue()))
 
         safeDistance = 0
         for i in range(len(path)-1):
