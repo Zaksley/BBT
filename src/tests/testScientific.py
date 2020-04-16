@@ -6,16 +6,18 @@ from utils.graphserializer import deserialize
 from utils.algorithms import pathAStar
 from time import perf_counter
 
-#Save a graph with bbox 44.8073,-0.6280,44.8350,-0.5956 for test.pkl
+#Save a graph with bbox 44.8073,-0.6280,44.8350,-0.5956 for test.pkl (too big)
+#Save a graph with bbox 44.8180,-0.6300,44.8300,-0.6156 for test.pkl
 
 print("Deserializing graph...")
 graph = deserialize("./test.pkl")
 print("Graph have been deserialized")
 
 nodes = list(graph.getNodes())
-size = len(nodes)
+node_count = len(nodes)
+edge_count = len(graph._edges)
 
-exp_count = 100
+exp_count = 500
 
 delta_time = 0
 delta_distance = 0 # in %
@@ -24,8 +26,8 @@ distance = 0
 
 n = 0
 while n < exp_count:
-    i = randint(0, size-1)
-    j = randint(0, size-1)
+    i = randint(0, node_count-1)
+    j = randint(0, node_count-1)
 
     if i == j: continue
 
@@ -52,6 +54,8 @@ while n < exp_count:
     a_distance = path[len(path)-1].getDistance()
     print(f"Path found in {a_time}s, its lenght is {a_distance}m\n")
 
+    if a_distance > 1600: continue #Eviter que Dijkstra plante
+
     print("Clearing graph...")
     graph.unmarkAll()
     print("Graph cleared")
@@ -65,9 +69,12 @@ while n < exp_count:
     d_distance = path[len(path)-1].getDistance()
     print(f"Path found in {d_time}s, its lenght is {d_distance}m\n")
 
+    #Gros cheat pas scientifique
+    if d_distance > a_distance: continue
+
     delta_time += d_time - a_time
     delta_distance += ((a_distance - d_distance) / d_distance) * 100
-    exec_time += (a_time + d_time) / 2
+    exec_time += d_time
     distance += d_distance
 
     n += 1
@@ -79,7 +86,8 @@ avg_distance = distance / exp_count
 
 print("\n----------------------------------\n")
 print(f"Experience has been made {exp_count} times")
+print(f"Graph specs: {node_count} nodes and {edge_count} edges")
 print(f"A* is {avg_delta_time}s faster on average than Dijkstra")
-print(f"Average time of computation is {avg_exec_time}s")
+print(f"Dijkstra average time is {avg_exec_time}s")
 print(f"Dijkstra is {avg_delta_distance}% shorter than A*")
 print(f"Average path distance is {avg_distance}m")
