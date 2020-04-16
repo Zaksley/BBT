@@ -10,7 +10,6 @@ from utils.safety import safetyUserWeight
 from utils.osmparser import geoDistance
 from utils.graphserializer import deserialize
 import folium, math, threading
-from time import perf_counter
 
 bxlat = 44.8333
 bxlon = -0.5667
@@ -202,10 +201,7 @@ class BBTWindow(QWidget):
         self.statusLabel.setText("En cours de traitement du chemin optimal...")
 
         (start, end) = self.findNearestNodes(startCoords, endCoords)
-        t1 = perf_counter()
         path = pathAStar(self.graph, start, end, self.weightBox.value(), lambda edge: safetyUserWeight(edge, self.safetySlide.getValue()))
-        t2 = perf_counter()
-        print(f"Path found in {t2-t1}s")
 
         safeDistance = 0
         for i in range(len(path)-1):
