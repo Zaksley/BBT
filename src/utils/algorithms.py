@@ -43,11 +43,13 @@ def pathAStar(G, start, end, weight=1, safety_func=lambda edge: 1):
                 neighbor.setPredecessor(current)
             #else: Bah rien
 
-            insort_left(toBeTreated, neighbor) #On ajoute tous les noeuds a la liste de noeuds a traiter
+            try: toBeTreated.remove(neighbor)
+            except: pass
+            insort_left(toBeTreated, neighbor)
 
         current = toBeTreated.popleft() #On supprime le noeud choisit de la liste des noeuds a traiter car il a maintenant une distance definitive
         current.mark() #Le noeud a une distance definitive
-        
+
     #Compute final path
     path = []
     predecessor = current

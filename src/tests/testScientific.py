@@ -10,7 +10,7 @@ from time import perf_counter
 #Save a graph with bbox 44.8180,-0.6300,44.8300,-0.6156 for test.pkl
 
 print("Deserializing graph...")
-graph = deserialize("./test.pkl")
+graph = deserialize("./graph.pkl")
 print("Graph have been deserialized")
 
 nodes = list(graph.getNodes())
@@ -53,8 +53,6 @@ while n < exp_count:
     a_time = t2 - t1
     a_distance = path[len(path)-1].getDistance()
     print(f"Path found in {a_time}s, its lenght is {a_distance}m\n")
-
-    if a_distance > 1600: continue #Eviter que Dijkstra plante
 
     print("Clearing graph...")
     graph.unmarkAll()
