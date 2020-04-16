@@ -6,6 +6,7 @@ from PyQt5.QtWebEngineWidgets import *
 from PyQt5.QtCore import *
 from .customwidgets import SearchEdit, SafetySlider
 from utils.algorithms import pathAStar
+from utils.safety import safetyUserWeight
 from utils.osmparser import geoDistance
 from utils.graphserializer import deserialize
 import folium, math, threading
@@ -25,11 +26,14 @@ class Worker(QRunnable):
         '''
         Initialise the runner function with passed args, kwargs.
         '''
-        self.fn(*self.args, **self.kwargs)
+
+        try: self.fn(*self.args, **self.kwargs)
+        except Exception as err: print(err)
 
 class BBTWindow(QWidget):
     reloadWebview = pyqtSignal()
     showMessageBox = pyqtSignal(str)
+    stopPathfinding = pyqtSignal()
 
     def __init__(self, mapPath, graphPath):
         QWidget.__init__(self)
@@ -164,21 +168,16 @@ class BBTWindow(QWidget):
         QMessageBox.information(self, "Information", message, QMessageBox.Ok)
 
     def go(self):
-        if self.graph == None:
-            return
-        
-        if self.threadpool.activeThreadCount() >= 1:
-            return
+        if self.graph == None: return
+        if self.threadpool.activeThreadCount() >= 1: return
         
         self.threadpool.start(Worker(self._goFunc))
 
     def stop(self):
-        if self.threadpool.activeThreadCount() == 0:
-            return
+        if self.threadpool.activeThreadCount() == 0: return
 
         self.statusLabel.setText("Arrêt du thread...")
-        self.threadpool.reserveThread()
-        self.threadpool.releaseThread()
+        self.stopPathfinding.emit()
         self.statusLabel.setText("Démarquage du graphe...")
         self.graph.unmarkAll()
         self.statusLabel.setText("Fait.")
@@ -192,6 +191,8 @@ class BBTWindow(QWidget):
             self.showMessageBox.emit("Vous devez remplir les deux champs avec des adresses réelles\nTip: Appuyez sur Entrer pour la sélectionner")
             self.statusLabel.setText("Fait.")
             return
+        
+        self.stopPathfinding.connect(quit)
 
         self.map = folium.Map(location=(bxlat, bxlon), zoom_start=12)
         self.map.add_child(folium.Marker(startCoords, tooltip="Départ", popup=self.startAdress.text()))
@@ -200,7 +201,7 @@ class BBTWindow(QWidget):
         self.statusLabel.setText("En cours de traitement du chemin optimal...")
 
         (start, end) = self.findNearestNodes(startCoords, endCoords)
-        path = pathAStar(self.graph, start, end, self.weightBox.value())
+        path = pathAStar(self.graph, start, end, self.weightBox.value(), lambda edge: safetyUserWeight(edge, self.safetySlide.getValue()))
 
         safeDistance = 0
         for i in range(len(path)-1):
