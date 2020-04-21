@@ -1,0 +1,5 @@
+folium==0.10.1
+overpy==0.4
+requests==2.23.0
+PyQt5==5.14.2
+PyQtWebEngine==5.14.0
