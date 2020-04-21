@@ -16,15 +16,16 @@ A safe routing application for bikes in Bordeaux using OpenStreet Map
 
 You will need :
 
+- requests
 - folium
 - overpy
 - PyQt5
 - PyQt5-sip (if not in PyQt5)
 - PyQtWebEngine
 
-Simply run
+But you can simply run
 ```
-$ pip3 install folium overpy etc...
+$ pip3 install -r requirements.txt
 ```
 
 ## Usage
