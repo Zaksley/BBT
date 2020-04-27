@@ -1,8 +1,10 @@
 import os
 from ui.bbtwindow import BBTWindow
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtGui import QIcon
 
 GRAPH_NAME = "graph.pkl"
+ICON_NAME = "icon.png"
 
 cd = os.path.abspath("./")
 mapPath = ""
@@ -18,6 +20,7 @@ else: #LINUX/MACOS/OTHERS
 
 app = QApplication([])
 window = BBTWindow(mapPath, graphPath)
+window.setWindowIcon(QIcon(ICON_NAME))
 app.exec_()
 
 os.remove(mapPath)
