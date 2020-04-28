@@ -6,18 +6,6 @@ def pathAStar(G, start, end, weight=1, safety_func=lambda edge: 1):
     Returns an array of `Node` which represents a good path from node `start` to node `end` using A* algorithm
     """
 
-    """def appendSorted(queue, node):
-        if len(queue) == 0:
-            queue.append(node)
-            return
-
-        for i in range(len(queue)):
-            if node.getCost() <= queue[i].getCost():
-                queue.insert(i, node)
-                return
-
-        queue.append(node)"""
-
     start.setDistance(0)
     start.setCost(0)
     current = start
