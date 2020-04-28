@@ -9,6 +9,7 @@ from utils.algorithms import pathAStar
 from utils.safety import safetyUserWeight
 from utils.osmparser import geoDistance
 from utils.graphserializer import deserialize
+from utils.constants import *
 import folium, math, threading
 
 bxlat = 44.8333
@@ -123,9 +124,11 @@ class BBTWindow(QWidget):
 
         self.distanceLabel = QLabel("<strong>Distance</strong>: ", self)
         self.percentLabel = QLabel("<strong>Pistes cyclables ou chemins:</strong> ", self)
+        self.timeLabel = QLabel("<strong>Temps moyen:</strong>", self)
 
         self.infoLayout.addWidget(self.distanceLabel)
         self.infoLayout.addWidget(self.percentLabel)
+        self.infoLayout.addWidget(self.timeLabel)
 
         self.infoBox.setLayout(self.infoLayout)
 
@@ -204,27 +207,40 @@ class BBTWindow(QWidget):
         path = pathAStar(self.graph, start, end, self.weightBox.value(), lambda edge: safetyUserWeight(edge, self.safetySlide.getValue()))
 
         safeDistance = 0
+        avg_speed = 0
         for i in range(len(path)-1):
             coord1 = path[i].getCoordinates()
             coord2 = path[i+1].getCoordinates()
             edge = self.graph.edgeBetween(path[i], path[i+1])
+
+            speed = AVG_SPEED_OTHERS
 
             #Safety color
             c = 'gray'
             if edge.getSafety() == "safe":
                 c = 'green'
                 safeDistance += edge.getLength()
+                speed = AVG_SPEED_CYCLEWAY
             elif edge.getSafety() == "normal": c = 'blue'
             elif edge.getSafety() == "unsafe": c = 'orange'
             elif edge.getSafety() == "very_unsafe": c = 'red'
 
             #Comfort color
+
+            avg_speed += speed
         
             self.map.add_child(folium.PolyLine([coord1, coord2], color=c))
+
+        avg_speed /= (len(path)-1)
 
         length = path[len(path)-1].getDistance()
         self.distanceLabel.setText(f"<strong>Distance:</strong> {round(length)}m")
         if length != 0: self.percentLabel.setText(f"<strong>Pistes cyclables ou chemins:</strong> {round(safeDistance/length * 100)}%")
+        if avg_speed != 0:
+            avg_time = length/avg_speed
+            hours = math.floor(avg_time)
+            minutes = math.ceil((avg_time-hours) * 60)
+            self.timeLabel.setText(f"<strong>Temps moyen:</strong> {str(hours) + 'heures' if hours != 0 else ''} {minutes} minutes")
 
         self.statusLabel.setText("Fait.")
 
