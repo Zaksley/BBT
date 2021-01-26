@@ -1,6 +1,6 @@
 # Bordeaux Bike Travel Project
 
-![Logo](https://pjdevs.servehttp.com/files/bbt_full.png)
+![Logo](https://raw.githubusercontent.com/pjdevs/bbt/master/bbt_full_transparent.png)
 A safe routing application for bikes in Bordeaux using OpenStreet Map
 
 ## Functionalities
